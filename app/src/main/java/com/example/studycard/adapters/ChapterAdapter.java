@@ -1,0 +1,109 @@
+package com.example.studycard.adapters;
+
+import static android.widget.Toast.makeText;
+
+
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.studycard.CoursActivity;
+import com.example.studycard.MainActivity;
+import com.example.studycard.R;
+import com.example.studycard.TopicActivity;
+import com.example.studycard.objects.Chapter;
+import com.example.studycard.objects.Cours;
+import com.example.studycard.objects.Topic;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ChapterAdapter extends ArrayAdapter<Chapter> {
+
+    private LayoutInflater inflater;
+    private int layout;
+    private List<Chapter> chapters;
+    private Context context;
+
+
+    public ChapterAdapter(Context context, int resource, List<Chapter> chapters) {
+        super(context, resource, chapters);
+        this.chapters = chapters;
+        this.layout = resource;
+        this.inflater = LayoutInflater.from(context);
+        this.context = context;
+    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        View view=inflater.inflate(this.layout, parent, false);
+
+
+        TextView nameView = view.findViewById(R.id.name);
+
+
+
+        Chapter chapter = chapters.get(position);
+
+
+
+        nameView.setText(chapter.name);
+
+        listCreater(view,chapter.topics,context);
+
+
+        return view;
+    }
+    public void listCreater(View view, ArrayList<Topic> topics, Context context)
+    {
+
+        // получаем элемент ListView
+        ListView topicsList = view.findViewById(R.id.topicsList);
+        //изменяем высоту
+        int height = 70*topics.size();
+        ViewGroup.LayoutParams params = topicsList.getLayoutParams();
+        params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, context.getResources().getDisplayMetrics());;
+
+        topicsList.setLayoutParams(params);
+        topicsList.requestLayout();
+        // создаем адаптер
+        TopicAdapter topicAdapter = new TopicAdapter(context, R.layout.topic, topics);
+        // устанавливаем адаптер
+        topicsList.setAdapter(topicAdapter);
+
+        // слушатель выбора в списке
+        AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                // получаем выбранный пункт
+                Topic selectedTopic = (Topic)parent.getItemAtPosition(position);
+
+                Intent intent = new Intent(context, TopicActivity.class);
+
+                intent.putExtra("name", topics.get(position).name);
+                intent.putExtra("id", String.valueOf(topics.get(position).id));
+
+                context.startActivity(intent);
+
+
+
+
+            }
+
+        };
+
+        topicsList.setOnItemClickListener(itemListener);
+    }
+}

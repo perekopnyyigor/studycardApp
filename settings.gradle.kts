@@ -10,16 +10,16 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS) // Или FAIL_ON_PROJECT_REPOS, если строго запрещаете репозитории в модулях
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // Добавлено для поддержки возможных внешних библиотек
     }
 }
 
 rootProject.name = "studycard"
 include(":app")
- 

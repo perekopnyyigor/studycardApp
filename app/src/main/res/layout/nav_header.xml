@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@color/blue">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+
+        android:contentDescription="Profile Picture" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Имя пользователя"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:paddingTop="8dp" />
+</LinearLayout>

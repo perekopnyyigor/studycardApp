@@ -1,9 +1,11 @@
 package com.example.studycard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.studycard.adapters.CoursAdapter;
 import com.example.studycard.objects.Cours;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,17 +48,18 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-    }
+        //главная картинка
+        ImageView mainPicture = findViewById(R.id.picture);
 
-    public void sendMessage(View view)
-    {
+        Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
+        //запускаем функции
         getData();
         jsonParse();
         listCreater();
 
-
-
     }
+
+
     public void jsonParse()
     {
         if(message!=null)
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     cours.name = jsonArray.getJSONObject(i).getString("name");
                     cours.id = jsonArray.getJSONObject(i).getInt("id");
                     cours.description = jsonArray.getJSONObject(i).getString("description");
-                    cours.picture = "https://studycard.ru"+jsonArray.getJSONObject(i).getString("picture");
+                    cours.picture = "https://studycard.ru"+jsonArray.getJSONObject(i).getString("picture").substring(2);
                     courses.add(cours);
                 }
 
@@ -95,12 +99,24 @@ public class MainActivity extends AppCompatActivity {
 
                 // получаем выбранный пункт
                 Cours selectedCours = (Cours)parent.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), "Был выбран пункт " + selectedCours.picture,
-                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, CoursActivity.class);
+
+                intent.putExtra("name", courses.get(position).name);
+                intent.putExtra("id", String.valueOf(courses.get(position).id));
+                intent.putExtra("picture", courses.get(position).picture);
+                startActivity(intent);
+
+
+                /*Toast.makeText(getApplicationContext(), "Был выбран пункт " + selectedCours.picture,
+                        Toast.LENGTH_SHORT).show();*/
+
             }
+
         };
+
         coursesList.setOnItemClickListener(itemListener);
     }
+
     public void getData()
     {
 
