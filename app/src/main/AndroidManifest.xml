@@ -14,11 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Studycard"
         tools:targetApi="31">
-        <activity
-            android:name=".Menu"
-            android:exported="false"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.Studycard.NoActionBar" />
+
         <activity
             android:name=".Test"
             android:exported="false" />

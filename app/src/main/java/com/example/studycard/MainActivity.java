@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,9 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studycard.adapters.CoursAdapter;
+import com.example.studycard.adapters.MenuAdapter;
 import com.example.studycard.objects.Cours;
+import com.example.studycard.objects.PunktMenu;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -25,6 +27,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -56,10 +59,43 @@ public class MainActivity extends AppCompatActivity {
         getData();
         jsonParse();
         listCreater();
+        createMenu();
 
     }
+    public void createMenu()
+    {
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
+        List<PunktMenu> punktMenus = new ArrayList<>();
 
+        PunktMenu punktMenu = new PunktMenu();
+        punktMenu.name="Главная";
+        punktMenu.picture=R.drawable.main;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Вход";
+        punktMenu.picture=R.drawable.enter;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Регистрация";
+        punktMenu.picture=R.drawable.registr;
+        punktMenus.add(punktMenu);
+
+// Установите адаптер для отображения данных
+        MenuAdapter menuAdapter = new MenuAdapter(punktMenus);
+
+// Устанавливаем LayoutManager для горизонтальной ориентации
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+// Устанавливаем адаптер
+        recyclerView.setAdapter(menuAdapter);
+        menuAdapter.setOnItemClickListener(position -> {
+            Toast.makeText(this, position+"/", Toast.LENGTH_SHORT).show();
+    });
+    }
     public void jsonParse()
     {
         if(message!=null)
