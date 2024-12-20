@@ -5,11 +5,10 @@ import static android.widget.Toast.makeText;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.InputType;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +38,8 @@ import io.noties.prism4j.Prism4j;
 
 public class Test extends AppCompatActivity {
     public static int count=0;
+    public static int trueAnswer=0;
+    public static int wrongAnswer=0;
     public int count_variant=0;
     public int quantity_variant=0;
     ArrayList<Card> cards = new ArrayList<Card>();
@@ -49,7 +50,14 @@ public class Test extends AppCompatActivity {
     EditText write;
     Button check;
     RecyclerView variantList;
+    TextView degreeView;
+    int start_pos=0;
+    int end_pos=0;
+    ;
+    int degree = 100;
+    String last_answer;
     private VariantAdapter variantAdapter;
+    //final Markwon markwon=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,19 +71,19 @@ public class Test extends AppCompatActivity {
             cards = (ArrayList<Card>) arguments.getSerializable("cards");
 
             variantList = findViewById(R.id.recyclerView);
-            //Счетчик`
+            //Счетчик
             TextView countView = findViewById(R.id.count);
             int lenght = cards.size();
-            String countStr = String.valueOf(count+1)+" / "+String.valueOf(lenght);
+            String countStr = "Вопрос "+(count+1)+" из "+lenght;
             countView.setText(countStr);
-
             //Название
             String name = cards.get(count).name;
             TextView nameView = findViewById(R.id.name);
             nameView.setText(name);
 
-
-
+            //Правильных ответов
+            degreeView = findViewById(R.id.degree);
+            calculateDegree();
 
             //Содержание
             content = cards.get(count).content;
@@ -106,6 +114,12 @@ public class Test extends AppCompatActivity {
             return insets;
         });
     }
+    public void calculateDegree()
+    {
+        float degree = (float) trueAnswer /(trueAnswer+wrongAnswer)*100;
+
+        degreeView.setText(String.valueOf(degree));
+    }
     public String replace(String oldString)
     {
         String newString =  oldString.replace("slash", "\\");
@@ -115,11 +129,20 @@ public class Test extends AppCompatActivity {
     }
     public void next(View v)
     {
-        count_variant=0;
-        count++;
-        Intent intent = new Intent(Test.this, Test.class);
-        intent.putExtra("cards",cards);
-        startActivity(intent);
+        if(cards.size()==(count+1))
+        {
+            count_variant=0;
+            count=0;
+            makeText(this, "Тест окончен", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            count_variant=0;
+            count++;
+            Intent intent = new Intent(Test.this, Test.class);
+            intent.putExtra("cards",cards);
+            startActivity(intent);
+        }
     }
     public void check(View v)
     {
@@ -133,6 +156,8 @@ public class Test extends AppCompatActivity {
         if(Objects.equals(variantStr, rightVariant.content))
         {
             count_variant++;
+            trueAnswer++;
+            calculateDegree();
 
 
 
@@ -148,23 +173,41 @@ public class Test extends AppCompatActivity {
 
             //Содержание
             String main_content = createContent(content,count_variant);
+
+            //updatePartialContent("qwer", 0, 10);
             printMarkdown(main_content);
 
             makeText(this, quantity_variant+"/"+count_variant, Toast.LENGTH_SHORT).show();
 
         }
-        //String[] arr = content.split("\\{m\\}");
-        /*if(quantity_variant==count_variant)
+        else
         {
-            nextButton.setVisibility(View.VISIBLE);
+            wrongAnswer++;
+            calculateDegree();
+        }
 
-        }*/
 
     }
+    public void updatePartialContent(String newContent, int start, int end) {
+        SpannableStringBuilder spannable = new SpannableStringBuilder(contentView.getText());
+        spannable.replace(start, end, newContent); // Здесь метод replace работает
+        contentView.setText(spannable);
+
+    }
+
+    public void updateContentWithAnimation(String newContent) {
+        contentView.animate().alpha(0).setDuration(100).withEndAction(() -> {
+            printMarkdown(newContent); // Обновляем содержимое
+            contentView.animate().alpha(1).setDuration(700).start();
+        }).start();
+    }
+
+
     public void printMarkdown(String main_content)
     {
-        final Prism4j prism4j = new Prism4j(new MyGrammarLocator());
 
+
+        final Prism4j prism4j = new Prism4j(new MyGrammarLocator());
         final Markwon markwon = Markwon.builder(Test.this)
 
                 .usePlugin(GlideImagesPlugin.create(Test.this)) // Используем GlideImagesPlugin
@@ -179,8 +222,14 @@ public class Test extends AppCompatActivity {
                 }))
                 .build();
 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         markwon.setMarkdown(contentView, replace(main_content));
+
     }
 
     public ArrayList<Variant> createVariant(String content,int start)
@@ -194,7 +243,7 @@ public class Test extends AppCompatActivity {
             if (i%2==1)
             {
                 Variant variant = new Variant();
-                variant.content = arr[i];
+                variant.content = replace(arr[i]);
 
                 if (arr[i].contains("{wr}"))
                 {
@@ -209,7 +258,15 @@ public class Test extends AppCompatActivity {
         }
        return variants;
     }
-
+    public  int countCharInString(String text, char target) {
+        int count = 0;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == target) {
+                count++;
+            }
+        }
+        return count;
+    }
     public String createContent(String content, int start)
     {
         String[] arr = content.split("\\{m\\}");
@@ -234,13 +291,68 @@ public class Test extends AppCompatActivity {
                 result2 += "...";
             }
         }
+        start_pos = result1.length();
 
+        start_pos = contentView.getText().toString().indexOf("...");
+        end_pos = start_pos+3;
         return result1+result2;
     }
 
+    public void createPosition(String content, int start)
+    {
+        String[] arr = content.split("\\{m\\}");
+        String result1="";
+        String result2="";
+
+        for (int i=0;i<start*2-1;i++)
+        {
+
+            result1 += arr[i];
+
+        }
+        int move = countCharInString(result1,'$');
+        start_pos = result1.length()-move;
+        end_pos = start_pos+3;
+    }
+    public void updateContentWithBuffer(String newContent) {
+        // Буферный TextView для промежуточного рендеринга
+        TextView buffer = new TextView(this);
+        buffer.setTextSize(contentView.getTextSize());
+
+        // Настройка Markwon
+        final Markwon markwon = Markwon.builder(this)
+                .usePlugin(GlideImagesPlugin.create(this)) // Для изображений
+                .usePlugin(MarkwonInlineParserPlugin.create()) // Inline Markdown
+                .usePlugin(SyntaxHighlightPlugin.create(
+                        new Prism4j(new MyGrammarLocator()),
+                        Prism4jThemeDefault.create())) // Подсветка синтаксиса
+                .usePlugin(JLatexMathPlugin.create(contentView.getTextSize(), builder -> {
+                    builder.inlinesEnabled(true); // Включаем встроенный LaTeX
+                }))
+                .build();
+
+        // Рендеринг в буфер
+        markwon.setMarkdown(buffer, newContent);
+
+        // Получаем Spannable из буфера
+        CharSequence renderedText = buffer.getText();
+
+
+
+        contentView.post(() -> {
+            contentView.setText(renderedText);
+            contentView.invalidate();
+            contentView.requestLayout();
+        });
+    }
+
+
+
+
+
     public void listCreater(ArrayList<Variant> variants) {
         // Получаем RecyclerView
-
+        variantList.setVisibility(View.VISIBLE);
         //variantList.setVisibility(View.VISIBLE);
         if(variants.get(0).type==1)
         {
@@ -270,31 +382,45 @@ public class Test extends AppCompatActivity {
                 if(Objects.equals(selectedVariant.content, rightVariant.content) )
                 {
                     count_variant++;
-                    makeText(this, quantity_variant+"/"+count_variant, Toast.LENGTH_SHORT).show();
+                    trueAnswer++;
+                    calculateDegree();
                     if(quantity_variant==(count_variant))
                     {
-                        String main_content = createContent(content,count_variant);
-                        printMarkdown(main_content);
 
-                        nextButton.setVisibility(View.VISIBLE);
-                        variantList.setVisibility(View.GONE);
+                            String main_content = createContent(content,count_variant);
+                            updateContentWithBuffer(main_content);
+                            //printMarkdown(main_content);
+
+                            nextButton.setVisibility(View.VISIBLE);
+                            variantList.setVisibility(View.GONE);
+
+
+
 
                     }
                     else
                     {
-
+                        variantList.setVisibility(View.GONE);
+                        contentView.setVisibility(View.GONE);
+                        String main_content = createContent(content,count_variant);
+                        updateContentWithBuffer(main_content);
                         //варианты
                         listCreater(createVariant(content,count_variant));
-
+                        contentView.setVisibility(View.VISIBLE);
                         //Содержание
-                        String main_content = createContent(content,count_variant);
-                        printMarkdown(main_content);
+
+
+
+                        //printMarkdown(main_content);
+
                     }
 
                 }
-
-
-
+                else
+                {
+                    wrongAnswer++;
+                    calculateDegree();
+                }
 
 
             });

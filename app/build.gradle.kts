@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.annotation)
 
     // Тестирование
     testImplementation(libs.junit)
@@ -86,6 +87,8 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.0") {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
+    implementation("com.google.android.gms:play-services-auth:20.7.0");
+
 
     // Стандартная тема для Prism4j, если она будет использоваться
     // implementation("io.noties:prism4j-theme-default:2.0.0") {

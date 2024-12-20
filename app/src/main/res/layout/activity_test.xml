@@ -28,6 +28,15 @@
             android:text="Вопрос 1 из 10"
             android:textColor="@color/black"
             android:textSize="14sp" />
+        <!-- Заголовок с прогрессом -->
+        <TextView
+            android:id="@+id/degree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Вопрос 1 из 10"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
         <!-- Вопрос -->
         <TextView

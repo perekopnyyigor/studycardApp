@@ -1,11 +1,16 @@
 package com.example.studycard;
 
+import static android.widget.Toast.makeText;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,9 +36,11 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -41,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static String message;
     ArrayList<Cours> courses =new ArrayList<>();
     ListView coursesList;
+    public static String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +64,93 @@ public class MainActivity extends AppCompatActivity {
 
         Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
         //запускаем функции
+
+        // Получаем экземпляр SharedPreferences
+        SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        // Читаем данные
+        String username = sharedPref.getString("login", "defaultName");
+        id = sharedPref.getString("id", "0");
+        TextView textView = findViewById(R.id.login);
+        if (!id.equals("0"))
+        {
+            textView.setText("Добро пожаловать "+ username);
+            createMenuAuto();
+        }
+        else
+        {
+            createMenu();
+        }
+
+
         getData();
         jsonParse();
         listCreater();
-        createMenu();
 
+
+    }
+    public void createMenuAuto()
+    {
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+
+        List<PunktMenu> punktMenus = new ArrayList<>();
+
+        PunktMenu punktMenu = new PunktMenu();
+        punktMenu.name="Главная";
+        punktMenu.picture=R.drawable.main;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Мои курсы";
+        punktMenu.picture=R.drawable.list;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Календарь";
+        punktMenu.picture=R.drawable.calendar;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Прогресс";
+        punktMenu.picture=R.drawable.progress;
+        punktMenus.add(punktMenu);
+
+        punktMenu = new PunktMenu();
+        punktMenu.name="Выход";
+        punktMenu.picture=R.drawable.exit;
+        punktMenus.add(punktMenu);
+
+// Установите адаптер для отображения данных
+        MenuAdapter menuAdapter = new MenuAdapter(punktMenus);
+
+// Устанавливаем LayoutManager для горизонтальной ориентации
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+// Устанавливаем адаптер
+        recyclerView.setAdapter(menuAdapter);
+        menuAdapter.setOnItemClickListener(position -> {
+            switch (position)
+            {
+                case 0:
+                    getData();
+                    jsonParse();
+                    listCreater();
+                    break;
+                case 1:
+                    getUserCourses(id);
+                    //makeText(this, message, Toast.LENGTH_SHORT).show();
+                    jsonParse();
+                    listCreater();
+                    break;
+                case 2:
+                    Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                    startActivity(intent);
+                    break;
+
+            }
+
+        });
     }
     public void createMenu()
     {
@@ -93,11 +183,22 @@ public class MainActivity extends AppCompatActivity {
 // Устанавливаем адаптер
         recyclerView.setAdapter(menuAdapter);
         menuAdapter.setOnItemClickListener(position -> {
-            Toast.makeText(this, position+"/", Toast.LENGTH_SHORT).show();
+            switch (position)
+            {
+                case 0:
+
+                    break;
+                case 1:
+                    Intent intent = new Intent(MainActivity.this, Enter_Activity.class);
+                    startActivity(intent);
+                    break;
+            }
+
     });
     }
     public void jsonParse()
     {
+        courses.clear();
         if(message!=null)
         {
             try {
@@ -164,6 +265,61 @@ public class MainActivity extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url("https://studycard.ru/index_android.php?action=all_chapters")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Запрос к серверу не был успешен: " +
+                                response.code() + " " + response.message());
+
+                    }
+
+                    // пример получения всех заголовков ответа
+                    Headers responseHeaders = response.headers();
+                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+                        // вывод заголовков
+                        System.out.println(responseHeaders.name(i) + ": "
+                                + responseHeaders.value(i));
+                    }
+                    // вывод тела ответа
+                    message=responseBody.string();
+
+                }
+            }
+        });
+        while (message ==null) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public void getUserCourses(String id)
+    {
+
+        message=null;
+//----------------------------------------------------
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder()
+                .add("id", id)
+
+                .build();
+
+
+        Request request = new Request.Builder()
+                .url("https://studycard.ru/index_android.php?action=user_courses")
+                .post(requestBody)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

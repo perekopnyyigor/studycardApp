@@ -14,7 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Studycard"
         tools:targetApi="31">
-
+        <activity
+            android:name=".EndTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Enter_Activity"
+            android:exported="false" />
         <activity
             android:name=".Test"
             android:exported="false" />
