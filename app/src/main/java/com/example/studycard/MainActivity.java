@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studycard.adapters.CoursAdapter;
 import com.example.studycard.adapters.CoursMenuAdapter;
 import com.example.studycard.adapters.MenuAdapter;
+import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.PunktMenu;
 import com.example.studycard.objects.User;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         //запускаем функции
         User.getUser(this);
 
-
+        checkFirstLaunch();
         TextView textView = findViewById(R.id.login);
         if (!User.id.equals("0"))
         {
@@ -96,12 +98,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void checkFirstLaunch() {
-        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("user", MODE_PRIVATE);
         boolean isFirstLaunch = prefs.getBoolean("is_first_launch", true);
 
-        if (isFirstLaunch && User.id.equals("0")) {
+        if (isFirstLaunch) {
+            // Генерация случайного ID (например, UUID)
+            String randomId = UUID.randomUUID().toString();
 
-            prefs.edit().putBoolean("is_first_launch", false).apply();
+            // Сохранение ID и отметки о первом запуске
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("is_first_launch", false);
+            editor.putString("id", randomId);
+            editor.apply();
+
+            String userId = prefs.getString("id", "0");
+
+            CRM.userEvent(userId, CRM.firstTime);
+
         }
     }
 
