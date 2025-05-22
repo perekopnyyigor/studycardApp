@@ -38,7 +38,7 @@
             android:layout_marginStart="16dp"
 
             android:layout_gravity="center_vertical"
-            android:text="Studycard"
+            android:text="Вход"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -66,7 +66,7 @@
             android:layout_marginTop="10dp"
             android:autofillHints="Логин"
             android:background="@drawable/edittext_background"
-            android:hint="Введите ответ"
+            android:hint="Имя"
             android:inputType="text"
             android:padding="16dp"
             android:textSize="16sp" />
@@ -78,8 +78,8 @@
             android:layout_marginTop="20dp"
             android:autofillHints="Пароль"
             android:background="@drawable/edittext_background"
-            android:hint="Введите ответ"
-            android:inputType="text"
+            android:hint="Пароль"
+            android:inputType="textPassword"
             android:padding="16dp"
             android:textSize="16sp" />
         <!-- Кнопка проверки -->
@@ -88,6 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:paddingLeft="70dp"
             android:backgroundTint="@color/blue"
             android:onClick="enter"
             android:text="Войти"
@@ -97,17 +98,9 @@
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-        <Button
-            android:id="@+id/yandex"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/blue"
-            android:onClick="yandex"
-            android:text="Через Яндекс"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+
+             />
+
 
 
     </LinearLayout>

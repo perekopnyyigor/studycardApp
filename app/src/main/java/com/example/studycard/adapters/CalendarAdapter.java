@@ -27,6 +27,7 @@ import com.example.studycard.objects.CalendarPunkt;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.CustomCalendar;
+import com.example.studycard.objects.Lesson;
 import com.example.studycard.objects.Topic;
 import com.squareup.picasso.Picasso;
 
@@ -68,7 +69,7 @@ public class CalendarAdapter extends ArrayAdapter<CustomCalendar> {
 
         return view;
     }
-    public void listCreater(View view, ArrayList<CalendarPunkt> calendarPunkts, Context context)
+    public void listCreater(View view, ArrayList<Lesson> calendarPunkts, Context context)
     {
 
         // получаем элемент ListView
@@ -91,13 +92,13 @@ public class CalendarAdapter extends ArrayAdapter<CustomCalendar> {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
                 // получаем выбранный пункт
-                CalendarPunkt calendarPunkt = (CalendarPunkt)parent.getItemAtPosition(position);
+                Lesson calendarPunkt = (Lesson) parent.getItemAtPosition(position);
 
                 Intent intent = new Intent(context, TopicActivity.class);
 
                 intent.putExtra("name", calendarPunkts.get(position).name);
                 intent.putExtra("id", calendarPunkts.get(position).topic_id);
-
+                intent.putExtra("cours_id", calendarPunkts.get(position).cours_id);
                 context.startActivity(intent);
 
 

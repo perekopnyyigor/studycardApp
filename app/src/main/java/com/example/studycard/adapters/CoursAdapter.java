@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import com.example.studycard.R;
 import com.example.studycard.objects.Cours;
+import com.example.studycard.objects.Lesson;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CoursAdapter extends ArrayAdapter<Cours> {
@@ -25,6 +27,9 @@ public class CoursAdapter extends ArrayAdapter<Cours> {
         this.courses = courses;
         this.layout = resource;
         this.inflater = LayoutInflater.from(context);
+
+
+
     }
     public View getView(int position, View convertView, ViewGroup parent) {
 

@@ -13,22 +13,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.studycard.R;
-import com.example.studycard.objects.CalendarPunkt;
+
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
+import com.example.studycard.objects.Lesson;
 import com.example.studycard.objects.Topic;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class CalendarPunktAdapter extends ArrayAdapter<CalendarPunkt> {
+public class CalendarPunktAdapter extends ArrayAdapter<Lesson> {
 
     private LayoutInflater inflater;
     private int layout;
-    private List<CalendarPunkt> calendarPunkts;
+    private List<Lesson> calendarPunkts;
     private Context context;
 
-    public CalendarPunktAdapter(Context context, int resource, List<CalendarPunkt> calendarPunkts) {
+    public CalendarPunktAdapter(Context context, int resource, List<Lesson> calendarPunkts) {
         super(context, resource, calendarPunkts);
         this.calendarPunkts = calendarPunkts;
         this.layout = resource;
@@ -45,7 +46,7 @@ public class CalendarPunktAdapter extends ArrayAdapter<CalendarPunkt> {
 
 
 
-        CalendarPunkt calendarPunkt = calendarPunkts.get(position);
+        Lesson calendarPunkt = calendarPunkts.get(position);
 
         nameView.setText(calendarPunkt.name);
 

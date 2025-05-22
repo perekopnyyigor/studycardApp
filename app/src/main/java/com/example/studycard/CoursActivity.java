@@ -21,7 +21,9 @@ import com.example.studycard.adapters.ChapterAdapter;
 import com.example.studycard.adapters.CoursAdapter;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
+import com.example.studycard.objects.Lesson;
 import com.example.studycard.objects.Topic;
+import com.example.studycard.objects.User;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -45,6 +47,7 @@ public class CoursActivity extends AppCompatActivity {
     public static String message;
     public static ArrayList<Chapter> chapters = new ArrayList<Chapter>();
     ListView chapterList;
+    String cours_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +59,7 @@ public class CoursActivity extends AppCompatActivity {
 
             Bundle arguments = getIntent().getExtras();
             String name = arguments.getString("name");
-            String id = arguments.getString("id");
+            cours_id = arguments.getString("id");
             String picture = arguments.getString("picture");
 
             TextView nameView = findViewById(R.id.name);
@@ -66,7 +69,7 @@ public class CoursActivity extends AppCompatActivity {
             nameView.setText(name);
 
             chapters.clear();
-            getData(id);
+            getData(cours_id);
             jsonParse();
             listCreater();
 
@@ -155,6 +158,8 @@ public class CoursActivity extends AppCompatActivity {
                         Topic topic = new Topic();
                         topic.name =jsontopics.getJSONObject(j).getString("name");
                         topic.id =jsontopics.getJSONObject(j).getInt("id");
+                        topic.cours_id =jsontopics.getJSONObject(j).getInt("cours");
+                        topic.commercial =jsontopics.getJSONObject(j).getString("commercial");
                         topics.add(topic);
                     }
                     chapter.topics=topics;
@@ -174,10 +179,13 @@ public class CoursActivity extends AppCompatActivity {
     public void listCreater()
     {
 
+        ArrayList<Lesson>  lessons = Lesson.findLessonForCours(User.lessons, cours_id);
+        //lessons =User.lessons;
+        //makeText(this, User.lessons.get(0).cours_id+"/"+cours_id, Toast.LENGTH_SHORT).show();
         // получаем элемент ListView
         chapterList = findViewById(R.id.cousersList);
         // создаем адаптер
-        ChapterAdapter chapterAdapter = new ChapterAdapter(this, R.layout.chapter, chapters);
+        ChapterAdapter chapterAdapter = new ChapterAdapter(this, R.layout.chapter, chapters, lessons);
         // устанавливаем адаптер
         chapterList.setAdapter(chapterAdapter);
         // слушатель выбора в списке

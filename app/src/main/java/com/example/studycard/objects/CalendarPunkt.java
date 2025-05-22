@@ -8,5 +8,7 @@ public class CalendarPunkt {
     public int days;
     public String topic_id;
     public String cours;
+    public String cours_id;
+
 
 }

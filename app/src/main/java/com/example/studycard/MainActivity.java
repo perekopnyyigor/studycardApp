@@ -1,12 +1,15 @@
 package com.example.studycard;
 
 import static android.widget.Toast.makeText;
-
+import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -22,9 +25,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studycard.adapters.CoursAdapter;
+import com.example.studycard.adapters.CoursMenuAdapter;
 import com.example.studycard.adapters.MenuAdapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.PunktMenu;
+import com.example.studycard.objects.User;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -47,8 +52,8 @@ import okhttp3.ResponseBody;
 public class MainActivity extends AppCompatActivity {
     public static String message;
     ArrayList<Cours> courses =new ArrayList<>();
-    ListView coursesList;
-    public static String id;
+    SharedPreferences sharedPref;
+    //public static String ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,36 +64,49 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         //главная картинка
         ImageView mainPicture = findViewById(R.id.picture);
-
-        Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
+        mainPicture.setImageResource(R.drawable.logo);
+        //Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
         //запускаем функции
+        User.getUser(this);
 
-        // Получаем экземпляр SharedPreferences
-        SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
 
-        // Читаем данные
-        String username = sharedPref.getString("login", "defaultName");
-        id = sharedPref.getString("id", "0");
         TextView textView = findViewById(R.id.login);
-        if (!id.equals("0"))
+        if (!User.id.equals("0"))
         {
-            textView.setText("Добро пожаловать "+ username);
+            textView.setText("Добро пожаловать "+ User.name+ "! ");
             createMenuAuto();
         }
         else
         {
+            textView.setText("Выберите курс");
             createMenu();
         }
 
 
-        getData();
-        jsonParse();
-        listCreater();
+        Cours.getCourses();
+        courses=Cours.jsonParse(Cours.mess);
+
+        coursListCreater(courses);
+
+
 
 
     }
+    private void checkFirstLaunch() {
+        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        boolean isFirstLaunch = prefs.getBoolean("is_first_launch", true);
+
+        if (isFirstLaunch && User.id.equals("0")) {
+
+            prefs.edit().putBoolean("is_first_launch", false).apply();
+        }
+    }
+
+
+
     public void createMenuAuto()
     {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -110,10 +128,6 @@ public class MainActivity extends AppCompatActivity {
         punktMenu.picture=R.drawable.calendar;
         punktMenus.add(punktMenu);
 
-        punktMenu = new PunktMenu();
-        punktMenu.name="Прогресс";
-        punktMenu.picture=R.drawable.progress;
-        punktMenus.add(punktMenu);
 
         punktMenu = new PunktMenu();
         punktMenu.name="Выход";
@@ -133,18 +147,27 @@ public class MainActivity extends AppCompatActivity {
             switch (position)
             {
                 case 0:
-                    getData();
-                    jsonParse();
-                    listCreater();
+                    Cours.getCourses();
+                    courses=Cours.jsonParse(Cours.mess);
+                    coursListCreater(courses);
                     break;
                 case 1:
-                    getUserCourses(id);
-                    //makeText(this, message, Toast.LENGTH_SHORT).show();
-                    jsonParse();
-                    listCreater();
+                    Cours.getUserCourses(User.id);
+                    courses=Cours.jsonParse(Cours.mess);
+                    coursListCreater(courses);
                     break;
                 case 2:
                     Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                    startActivity(intent);
+                    break;
+                case 3:
+                    sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("login","defaultName");
+                    editor.putString("id","0");
+                    editor.apply();
+
+                    intent = new Intent(MainActivity.this, MainActivity.class);
                     startActivity(intent);
                     break;
 
@@ -192,172 +215,45 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, Enter_Activity.class);
                     startActivity(intent);
                     break;
+                case 2:
+                    intent = new Intent(MainActivity.this, RegistrActivity.class);
+                    startActivity(intent);
+                    break;
             }
 
     });
     }
-    public void jsonParse()
+
+
+
+    public void coursListCreater(ArrayList<Cours> courses)
     {
-        courses.clear();
-        if(message!=null)
-        {
-            try {
-                JSONArray jsonArray = new JSONArray(message);
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    Cours cours = new Cours();
-                    cours.name = jsonArray.getJSONObject(i).getString("name");
-                    cours.id = jsonArray.getJSONObject(i).getInt("id");
-                    cours.description = jsonArray.getJSONObject(i).getString("description");
-                    cours.picture = "https://studycard.ru"+jsonArray.getJSONObject(i).getString("picture").substring(2);
-                    courses.add(cours);
-                }
+        RecyclerView coursesList = findViewById(R.id.recyclerCousers);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        // Установите адаптер для отображения данных
+        CoursMenuAdapter coursMenuAdapter = new CoursMenuAdapter( courses);
 
-    }
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        coursesList.setLayoutManager(layoutManager);
 
-    public void listCreater()
-    {
+        // Устанавливаем адаптер
+        coursesList.setAdapter(coursMenuAdapter);
+        coursMenuAdapter.setOnItemClickListener(position -> {
 
-        // получаем элемент ListView
-        coursesList = findViewById(R.id.cousersList);
-        // создаем адаптер
-        CoursAdapter coursAdapter = new CoursAdapter(this, R.layout.cours, courses);
-        // устанавливаем адаптер
-        coursesList.setAdapter(coursAdapter);
-        // слушатель выбора в списке
-        AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            Intent intent = new Intent(MainActivity.this, CoursActivity.class);
 
-                // получаем выбранный пункт
-                Cours selectedCours = (Cours)parent.getItemAtPosition(position);
-                Intent intent = new Intent(MainActivity.this, CoursActivity.class);
-
-                intent.putExtra("name", courses.get(position).name);
-                intent.putExtra("id", String.valueOf(courses.get(position).id));
-                intent.putExtra("picture", courses.get(position).picture);
-                startActivity(intent);
+            intent.putExtra("name", courses.get(position).name);
+            intent.putExtra("id", String.valueOf(courses.get(position).id));
+            intent.putExtra("picture", courses.get(position).picture);
+            startActivity(intent);
 
 
                 /*Toast.makeText(getApplicationContext(), "Был выбран пункт " + selectedCours.picture,
                         Toast.LENGTH_SHORT).show();*/
 
-            }
 
-        };
-
-        coursesList.setOnItemClickListener(itemListener);
-    }
-
-    public void getData()
-    {
-
-
-        message=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=all_chapters")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    message=responseBody.string();
-
-                }
-            }
         });
-        while (message ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
-    public void getUserCourses(String id)
-    {
 
-        message=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = new FormBody.Builder()
-                .add("id", id)
-
-                .build();
-
-
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=user_courses")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    message=responseBody.string();
-
-                }
-            }
-        });
-        while (message ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 
 }

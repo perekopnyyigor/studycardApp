@@ -60,8 +60,16 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Variant variant = variants.get(position);
         TextView content = holder.itemView.findViewById(R.id.content);
+
+
         // Устанавливаем Markdown-контент
         String markdownContent = variant.content; // Получение контента
+
+        if (variant.type==3)
+        {
+            markdownContent = "$$"+variant.content+"$$";
+
+        }
         if (markdownContent == null || markdownContent.isEmpty()) {
             markdownContent = "Нет данных"; // Защита от null
         }

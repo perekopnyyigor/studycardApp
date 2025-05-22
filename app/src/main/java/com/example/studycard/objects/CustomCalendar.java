@@ -13,10 +13,11 @@ import java.util.Locale;
 
 public class CustomCalendar { // Изменено имя класса
     public String date;
-    public ArrayList<CalendarPunkt> calendarPunkts = new ArrayList<>(); // Инициализация
+    public ArrayList<Lesson> calendarPunkts = new ArrayList<>(); // Инициализация
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static ArrayList<CustomCalendar> createCalendar(ArrayList<CalendarPunkt> allCalendarPunkts) throws ParseException {
+
+    public static ArrayList<CustomCalendar> createCalendar(ArrayList<Lesson> lessons) throws ParseException {
         ArrayList<CustomCalendar> calendarResult = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         java.util.Calendar currentCalendar = java.util.Calendar.getInstance();
@@ -24,17 +25,26 @@ public class CustomCalendar { // Изменено имя класса
         // Цикл на 5 дней
         for (int i = 0; i < 5; i++) {
             CustomCalendar calendar = new CustomCalendar();
-            ArrayList<CalendarPunkt> calendarTempPunkts = new ArrayList<>();
+            ArrayList<Lesson> lessonsTemp = new ArrayList<>();
 
             calendar.date = sdf.format(currentCalendar.getTime());
 
-            for (CalendarPunkt punkt : allCalendarPunkts) {
-                if (calendar.date.equals(punkt.date_next)) {
-                    calendarTempPunkts.add(punkt);
+            for (Lesson lesson : lessons) {
+                if (calendar.date.equals(lesson.date_next)) {
+                    lessonsTemp.add(lesson);
                 }
             }
 
-            calendar.calendarPunkts = calendarTempPunkts;
+            if(i==0)
+                calendar.date = "Сегодня";
+            else if(i==1)
+                calendar.date = "Завтра";
+
+
+
+
+
+            calendar.calendarPunkts = lessonsTemp;
             calendarResult.add(calendar);
 
             currentCalendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -42,24 +52,24 @@ public class CustomCalendar { // Изменено имя класса
 
         // Обработка пропущенных пунктов
         CustomCalendar missedCalendar = new CustomCalendar();
-        ArrayList<CalendarPunkt> missedPunkts = new ArrayList<>();
+        ArrayList<Lesson> missedPunkts = new ArrayList<>();
+        java.util.Calendar dateCalendarNow = java.util.Calendar.getInstance();
+        String currentFormattedDate = sdf.format(dateCalendarNow.getTime());
 
-        String currentFormattedDate = sdf.format(currentCalendar.getTime());
-
-        for (CalendarPunkt punkt : allCalendarPunkts) {
+        for (Lesson lesson : lessons) {
             try {
                 LocalDate dateNow = LocalDate.parse(currentFormattedDate);
-                LocalDate datePunkt = LocalDate.parse(punkt.date_next);
+                LocalDate datePunkt = LocalDate.parse(lesson.date_next);
 
                 if (datePunkt.isBefore(dateNow)) {
-                    missedPunkts.add(punkt);
+                    missedPunkts.add(lesson);
                 }
             } catch (DateTimeParseException e) {
                 e.printStackTrace(); // Логируем ошибку, если формат некорректен
             }
         }
 
-        missedCalendar.date = "Пропущено";
+        missedCalendar.date = "Пропущенное";
         missedCalendar.calendarPunkts = missedPunkts;
         calendarResult.add(missedCalendar);
 
@@ -69,4 +79,8 @@ public class CustomCalendar { // Изменено имя класса
     public CustomCalendar() {
         // Конструктор по умолчанию
     }
+
+
+
+
 }

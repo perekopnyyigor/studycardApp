@@ -1,11 +1,14 @@
 package com.example.studycard;
 
+import static com.example.studycard.objects.Lesson.jsonParse;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,10 +22,13 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.studycard.adapters.CalendarAdapter;
 import com.example.studycard.adapters.ChapterAdapter;
 
-import com.example.studycard.objects.CalendarPunkt;
+
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.CustomCalendar;
+import com.example.studycard.objects.Lesson;
+import com.example.studycard.objects.User;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +51,8 @@ public class CalendarActivity extends AppCompatActivity {
     public static String message;
     public static String id;
     ListView calendarList;
-    public ArrayList<CalendarPunkt> CalendarPunkts= new ArrayList<>();
+    //public ArrayList<CalendarPunkt> CalendarPunkts= new ArrayList<>();
+    public ArrayList<Lesson> lessons = new ArrayList<>();
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +65,22 @@ public class CalendarActivity extends AppCompatActivity {
             return insets;
         });
 
+        ImageView mainPicture = findViewById(R.id.picture);
+
+        Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
+
+        //запускаем функции
         // Получаем экземпляр SharedPreferences
-        SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
+        /*SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
         // Читаем данные
         String username = sharedPref.getString("login", "defaultName");
         id = sharedPref.getString("id", "0");
-        getUserLessons(id);
-        jsonParse();
+        Lesson.getUserLessons(id);*/
+        lessons= User.lessons;
 
         ArrayList<CustomCalendar> calendars = null;
         try {
-            calendars = CustomCalendar.createCalendar(CalendarPunkts);
+            calendars = CustomCalendar.createCalendar(lessons);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -76,92 +88,9 @@ public class CalendarActivity extends AppCompatActivity {
         //Toast.makeText(this, calendars.get(0).calendarPunkts.get(0).name+" ", Toast.LENGTH_SHORT).show();
         listCreater(calendars);
 
-
-
-
     }
-    public void getUserLessons(String id)
-    {
-
-        message=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = new FormBody.Builder()
-                .add("id", id)
-
-                .build();
 
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=calendar")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    message=responseBody.string();
-
-                }
-            }
-        });
-        while (message ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-    public void jsonParse()
-    {
-        CalendarPunkts.clear();
-        if(message!=null)
-        {
-            try {
-                JSONArray jsonArray = new JSONArray(message);
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    CalendarPunkt calendarPunkt = new CalendarPunkt();
-                    calendarPunkt.name = jsonArray.getJSONObject(i).getString("topic_name");
-                    calendarPunkt.date_next = jsonArray.getJSONObject(i).getString("date_next");
-                    calendarPunkt.date = jsonArray.getJSONObject(i).getString("date");
-                    calendarPunkt.days = jsonArray.getJSONObject(i).getInt("days");
-                    calendarPunkt.period =jsonArray.getJSONObject(i).getInt("period");
-                    calendarPunkt.topic_id = jsonArray.getJSONObject(i).getString("topic");
-                    calendarPunkt.cours = jsonArray.getJSONObject(i).getString("cours_name");
-
-                    CalendarPunkts.add(calendarPunkt);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
     public void listCreater(ArrayList<CustomCalendar> calendars)
     {
 

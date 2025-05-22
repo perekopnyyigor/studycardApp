@@ -19,6 +19,8 @@ public class MyGrammarLocator implements GrammarLocator {
                 return Prism_json.create(prism4j);
             case "javascript":
                 return Prism_javascript.create(prism4j);
+            case "csharp":
+                return Prism_csharp.create(prism4j);
             // everything else is omitted
 
             default:
