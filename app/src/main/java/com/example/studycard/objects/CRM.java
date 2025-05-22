@@ -31,15 +31,12 @@ public class CRM {
 //----------------------------------------------------
 
         OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = new FormBody.Builder()
-                .add("id", id)
-                .add("event", String.valueOf(event))
-                .build();
+
 
 
         Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=calendar")
-                .post(requestBody)
+                .url("https://api.studycard.ru/crm/public/create_event?user_id="+id+"&event="+event)
+
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -70,13 +67,13 @@ public class CRM {
                 }
             }
         });
-        while (message ==null) {
+        /*while (message ==null) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-        }
+        }*/
     }
 }

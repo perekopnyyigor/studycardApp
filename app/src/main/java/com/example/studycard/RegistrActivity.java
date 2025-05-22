@@ -1,5 +1,7 @@
 package com.example.studycard;
 
+import static android.widget.Toast.makeText;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +18,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.studycard.objects.CRM;
+import com.example.studycard.objects.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -59,6 +63,14 @@ public class RegistrActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        if(User.id.equals("0"))
+        {
+            User.getUser(this);
+            CRM.userEvent(User.noId, CRM.openReg);
+
+        }
+
+
 //главная картинка
         ImageView mainPicture = findViewById(R.id.picture);
 

@@ -39,6 +39,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import okhttp3.Call;
@@ -102,19 +103,21 @@ public class MainActivity extends AppCompatActivity {
         boolean isFirstLaunch = prefs.getBoolean("is_first_launch", true);
 
         if (isFirstLaunch) {
-            // Генерация случайного ID (например, UUID)
-            String randomId = UUID.randomUUID().toString();
+
+
+            Random random = new Random();
+            int randomId = random.nextInt(999999);
 
             // Сохранение ID и отметки о первом запуске
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("is_first_launch", false);
-            editor.putString("id", randomId);
+            editor.putString("noId",String.valueOf(randomId));
             editor.apply();
 
-            String userId = prefs.getString("id", "0");
 
-            CRM.userEvent(userId, CRM.firstTime);
 
+            CRM.userEvent(String.valueOf(randomId), CRM.firstTime);
+           // makeText(this, CRM.message, Toast.LENGTH_LONG).show();
         }
     }
 

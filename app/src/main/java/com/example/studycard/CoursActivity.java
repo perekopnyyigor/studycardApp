@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.studycard.adapters.ChapterAdapter;
 import com.example.studycard.adapters.CoursAdapter;
+import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.Lesson;
@@ -56,6 +57,12 @@ public class CoursActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+
+            if(User.id.equals("0"))
+            {
+                User.getUser(this);
+                CRM.userEvent(User.noId, CRM.openCours);
+            }
 
             Bundle arguments = getIntent().getExtras();
             String name = arguments.getString("name");

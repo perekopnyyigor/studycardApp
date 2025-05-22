@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class User {
     public static SharedPreferences sharedPref;
     public static String id;
+    public static String noId;
     public static String name;
     public static ArrayList<Lesson> lessons;
 
@@ -18,6 +19,7 @@ public class User {
         sharedPref = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         name = sharedPref.getString("login", "defaultName");
         id = sharedPref.getString("id", "0");
+        noId = sharedPref.getString("noId", "0");
         Lesson.getUserLessons(id);
         lessons = Lesson.jsonParse();
     }
