@@ -63,6 +63,7 @@ public class RegistrActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        //CRM
         if(User.id.equals("0"))
         {
             User.getUser(this);
@@ -118,6 +119,15 @@ public class RegistrActivity extends AppCompatActivity {
             if(message!=null)
             {
                 try {
+
+                    //CRM
+                    if(User.id.equals("0"))
+                    {
+                        User.getUser(this);
+                        CRM.userEvent(User.noId, CRM.pushReg);
+
+                    }
+
                     JSONObject jsonObject = new JSONObject(message);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("login",jsonObject.getString("login"));
@@ -140,6 +150,7 @@ public class RegistrActivity extends AppCompatActivity {
     }
     public void enter(View v)
     {
+
         String name = nameView.getText().toString();
         String pass1 = pass1View.getText().toString();
         String pass2 = pass2View.getText().toString();
@@ -149,6 +160,13 @@ public class RegistrActivity extends AppCompatActivity {
         {
 
             try {
+                //CRM
+                if(User.id.equals("0"))
+                {
+                    User.getUser(this);
+                    CRM.userEvent(User.noId, CRM.pushReg);
+
+                }
                 JSONObject jsonObject = new JSONObject(message);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("login",jsonObject.getString("login"));

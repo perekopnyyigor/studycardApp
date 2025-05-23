@@ -29,12 +29,14 @@ import com.example.studycard.adapters.ChapterAdapter;
 import com.example.studycard.adapters.CoursMenuAdapter;
 import com.example.studycard.adapters.MenuAdapter;
 import com.example.studycard.adapters.TryAdapter;
+import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Card;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.CustomCalendar;
 import com.example.studycard.objects.PunktMenu;
 import com.example.studycard.objects.Topic;
 import com.example.studycard.objects.Try;
+import com.example.studycard.objects.User;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -92,6 +94,15 @@ public class TopicActivity extends AppCompatActivity {
             // Читаем данные
             user_id = sharedPref.getString("id", "0");
 
+
+            //CRM
+            if(User.id.equals("0"))
+            {
+                User.getUser(this);
+                CRM.userEvent(User.noId, CRM.openTopic);
+
+            }
+
             createMenu();
 
             cards.clear();
@@ -112,6 +123,13 @@ public class TopicActivity extends AppCompatActivity {
     }
     public void startTest()
     {
+        //CRM
+        if(User.id.equals("0"))
+        {
+            User.getUser(this);
+            CRM.userEvent(User.noId, CRM.pressTest);
+
+        }
 
         if(!Objects.equals(user_id, "0")) {
             addLesson();

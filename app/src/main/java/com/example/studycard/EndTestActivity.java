@@ -20,7 +20,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Card;
+import com.example.studycard.objects.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +64,14 @@ public class EndTestActivity extends AppCompatActivity {
         //главная картинка
         ImageView mainPicture = findViewById(R.id.picture);
         mainPicture.setImageResource(R.drawable.logo);
+
+        //CRM
+        if(User.id.equals("0"))
+        {
+            User.getUser(this);
+            CRM.userEvent(User.noId, CRM.doneTest);
+
+        }
 
         //Данные юзера
         SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -119,6 +129,14 @@ public class EndTestActivity extends AppCompatActivity {
     }
     public void comm(View v)
     {
+        //CRM
+        if(User.id.equals("0"))
+        {
+            User.getUser(this);
+            CRM.userEvent(User.noId, CRM.payForm);
+
+        }
+
         Intent intent = new Intent(EndTestActivity.this, CommercialActivity.class);
         startActivity(intent);
     }
