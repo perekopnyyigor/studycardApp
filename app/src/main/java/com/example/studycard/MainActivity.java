@@ -256,6 +256,12 @@ public class MainActivity extends AppCompatActivity {
         coursesList.setAdapter(coursMenuAdapter);
         coursMenuAdapter.setOnItemClickListener(position -> {
 
+            if(User.id.equals("0"))
+            {
+                User.getUser(this);
+                CRM.userEvent(User.noId, CRM.openCours);
+            }
+
             Intent intent = new Intent(MainActivity.this, CoursActivity.class);
 
             intent.putExtra("name", courses.get(position).name);

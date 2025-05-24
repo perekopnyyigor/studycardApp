@@ -23,6 +23,7 @@ import com.example.studycard.CoursActivity;
 import com.example.studycard.MainActivity;
 import com.example.studycard.R;
 import com.example.studycard.TopicActivity;
+import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.Lesson;
@@ -94,6 +95,14 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
+                //CRM
+                if(User.id.equals("0"))
+                {
+                    User.getUser(context);
+                    CRM.userEvent(User.noId, CRM.openTopic);
+
+                }
+
                 // получаем выбранный пункт
                 Topic selectedTopic = (Topic)parent.getItemAtPosition(position);
 
@@ -102,6 +111,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
                 intent.putExtra("name", topics.get(position).name);
                 intent.putExtra("id", String.valueOf(topics.get(position).id));
                 intent.putExtra("cours_id", String.valueOf(topics.get(position).cours_id));
+                intent.putExtra("commercial", String.valueOf(topics.get(position).commercial));
                 context.startActivity(intent);
 
 

@@ -58,11 +58,7 @@ public class CoursActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 
-            if(User.id.equals("0"))
-            {
-                User.getUser(this);
-                CRM.userEvent(User.noId, CRM.openCours);
-            }
+
 
             Bundle arguments = getIntent().getExtras();
             String name = arguments.getString("name");

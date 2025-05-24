@@ -71,6 +71,7 @@ public class TopicActivity extends AppCompatActivity {
     ArrayList<Card> cardsPractic = new ArrayList<Card>();
     LineChart lineChart;
     String topic_id;
+    String commercial;
     String cours_id;
     String user_id;
     int period;
@@ -86,6 +87,7 @@ public class TopicActivity extends AppCompatActivity {
             Bundle arguments = getIntent().getExtras();
             String name = arguments.getString("name");
             String id = arguments.getString("id");
+            commercial =arguments.getString("commercial");
             cours_id = arguments.getString("cours_id");
             topic_id=id;
 
@@ -95,13 +97,7 @@ public class TopicActivity extends AppCompatActivity {
             user_id = sharedPref.getString("id", "0");
 
 
-            //CRM
-            if(User.id.equals("0"))
-            {
-                User.getUser(this);
-                CRM.userEvent(User.noId, CRM.openTopic);
 
-            }
 
             createMenu();
 
@@ -140,11 +136,19 @@ public class TopicActivity extends AppCompatActivity {
         }
         ArrayList<Card> checkCards= Card.CheckPeriod(cards, period);
 
+        if(Objects.equals(commercial, "1"))
+        {
+            Intent intent = new Intent(this, CommercialActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            Intent intent = new Intent(this, Test.class);
+            intent.putExtra("cards",checkCards);
+            intent.putExtra("topic_id",topic_id);
+            startActivity(intent);
+        }
 
-        Intent intent = new Intent(this, Test.class);
-        intent.putExtra("cards",checkCards);
-        intent.putExtra("topic_id",topic_id);
-        startActivity(intent);
 
     }
     public void createMenu()
