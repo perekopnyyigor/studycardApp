@@ -1,6 +1,12 @@
 package com.example.studycard;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -23,33 +29,69 @@ public class PayFormActivity extends AppCompatActivity {
 
     private void setupWebView(String url) {
         WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true); // Включение JavaScript (может потребоваться для ЮKassa)
-        webSettings.setDomStorageEnabled(true); // Включение DOM Storage
 
-        // Настройка WebViewClient для обработки переходов внутри WebView
+        // Основные настройки WebView
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setBuiltInZoomControls(false);
+        webSettings.setDisplayZoomControls(false);
+
+        // Разрешаем куки (важно для платежных систем)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        CookieManager.getInstance().setAcceptCookie(true);
+
+        // Настройка обработки URL
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                // Обработка переходов по ссылкам (оставляем в WebView)
-                view.loadUrl(url);
-                return true;
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return handleUrl(request.getUrl().toString());
             }
 
+            @SuppressWarnings("deprecation")
             @Override
-            public void onPageFinished(WebView view, String url) {
-                // Можно добавить обработку завершения загрузки
-                super.onPageFinished(view, url);
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return handleUrl(url);
+            }
 
-                // Пример: проверка успешной оплаты по URL
-                if (url.contains("success")) {
-                    // Оплата успешна
+            private boolean handleUrl(String url) {
+                // Если это стандартный HTTP/HTTPS URL - загружаем в WebView
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false; // Продолжаем загрузку в WebView
+                }
+
+                // Если это кастомная схема (например, банковское приложение)
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                    return true; // Прерываем загрузку в WebView
+                } catch (ActivityNotFoundException e) {
+                    // Если приложения для обработки схемы нет
+                    Log.e("WebView", "Не удалось открыть URL: " + url);
+                    return false;
                 }
             }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                // Проверяем URL на успешную оплату
+                if (url.contains("your-site.ru/success")) {
+                    // Оплата прошла успешно
+
+                } else if (url.contains("your-site.ru/fail")) {
+                    // Ошибка оплаты
+
+                }
+            }
+
         });
 
-        // Загружаем URL платежа
+        // Загружаем начальный URL
         webView.loadUrl(url);
     }
+
 
     @Override
     public void onBackPressed() {

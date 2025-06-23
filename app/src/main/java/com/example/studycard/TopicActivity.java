@@ -74,6 +74,7 @@ public class TopicActivity extends AppCompatActivity {
     String commercial;
     String cours_id;
     String user_id;
+    String access;
     int period;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,7 @@ public class TopicActivity extends AppCompatActivity {
             String id = arguments.getString("id");
             commercial =arguments.getString("commercial");
             cours_id = arguments.getString("cours_id");
+            access = arguments.getString("access");
             topic_id=id;
 
             // Получаем экземпляр SharedPreferences
@@ -138,14 +140,29 @@ public class TopicActivity extends AppCompatActivity {
 
         if(Objects.equals(commercial, "1"))
         {
-            Intent intent = new Intent(this, CommercialActivity.class);
-            startActivity(intent);
+            if(access.equals("0"))
+            {
+                Intent intent = new Intent(this, CommercialActivity.class);
+                intent.putExtra("user_id", user_id);
+                intent.putExtra("cours_id",cours_id);
+                startActivity(intent);
+            }
+            if(access.equals("1"))
+            {
+                Intent intent = new Intent(this, Test.class);
+                intent.putExtra("cards",checkCards);
+                intent.putExtra("topic_id",topic_id);
+                intent.putExtra("cours_id",cours_id);
+                startActivity(intent);
+            }
+
         }
         else
         {
             Intent intent = new Intent(this, Test.class);
             intent.putExtra("cards",checkCards);
             intent.putExtra("topic_id",topic_id);
+            intent.putExtra("cours_id",cours_id);
             startActivity(intent);
         }
 

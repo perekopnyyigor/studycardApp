@@ -41,16 +41,16 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
     private List<Chapter> chapters;
     private Context context;
     private ArrayList<Lesson> lessons;
-
-    public ChapterAdapter(Context context, int resource, List<Chapter> chapters, ArrayList<Lesson> lessons) {
+    private String access;
+    public ChapterAdapter(Context context, int resource, List<Chapter> chapters, ArrayList<Lesson> lessons, String access) {
         super(context, resource, chapters);
         this.chapters = chapters;
         this.layout = resource;
         this.inflater = LayoutInflater.from(context);
         this.context = context;
-
+        this.access = access;
         this.lessons = lessons;
-
+        makeText(context, access, Toast.LENGTH_SHORT).show();
 
     }
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -79,14 +79,14 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
         // получаем элемент ListView
         ListView topicsList = view.findViewById(R.id.topicsList);
         //изменяем высоту
-        int height = 90*topics.size();
+        int height = 110*topics.size();
         ViewGroup.LayoutParams params = topicsList.getLayoutParams();
         params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, context.getResources().getDisplayMetrics());;
 
         topicsList.setLayoutParams(params);
         topicsList.requestLayout();
         // создаем адаптер
-        TopicAdapter topicAdapter = new TopicAdapter(context, R.layout.topic, topics, lessons);
+        TopicAdapter topicAdapter = new TopicAdapter(context, R.layout.topic, topics, lessons, access);
         // устанавливаем адаптер
         topicsList.setAdapter(topicAdapter);
 
@@ -112,6 +112,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
                 intent.putExtra("id", String.valueOf(topics.get(position).id));
                 intent.putExtra("cours_id", String.valueOf(topics.get(position).cours_id));
                 intent.putExtra("commercial", String.valueOf(topics.get(position).commercial));
+                intent.putExtra("access", String.valueOf(access));
                 context.startActivity(intent);
 
 

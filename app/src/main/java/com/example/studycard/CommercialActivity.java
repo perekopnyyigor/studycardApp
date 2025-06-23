@@ -16,14 +16,18 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class CommercialActivity extends AppCompatActivity {
     public static String mess;
+    public static String cours_id;
+    public static String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +38,10 @@ public class CommercialActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Bundle arguments = getIntent().getExtras();
+        cours_id = arguments.getString("cours_id");
+        user_id = arguments.getString("user_id");
+        Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
         //главная картинка
         ImageView mainPicture = findViewById(R.id.picture);
         mainPicture.setImageResource(R.drawable.logo);
@@ -57,8 +65,14 @@ public class CommercialActivity extends AppCompatActivity {
 
         OkHttpClient client = new OkHttpClient();
 
+        RequestBody requestBody = new FormBody.Builder()
+                .add("user_id", user_id)
+                .add("cours_id", cours_id)
+                .build();
+
         Request request = new Request.Builder()
                 .url("https://studycard.ru/index_android.php?action=pay")
+                .post(requestBody)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

@@ -96,7 +96,7 @@
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/blue"
             android:onClick="comm"
-            android:text="Отключить рекламу"
+            android:text="Разблокировать все темы"
             android:textColor="@color/white"
             android:textSize="16sp" />
 

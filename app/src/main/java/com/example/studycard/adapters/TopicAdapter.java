@@ -34,14 +34,15 @@ public class TopicAdapter extends ArrayAdapter<Topic> {
     private List<Topic> topics;
     private Context context;
     private ArrayList<Lesson> lessons;
-
-    public TopicAdapter(Context context, int resource, List<Topic> topics, ArrayList<Lesson> lessons) {
+    private String access;
+    public TopicAdapter(Context context, int resource, List<Topic> topics, ArrayList<Lesson> lessons, String access) {
         super(context, resource, topics);
         this.topics = topics;
         this.layout = resource;
         this.inflater = LayoutInflater.from(context);
         this.context = context;
         this.lessons=lessons;
+        this.access=access;
 
 
 
@@ -59,32 +60,31 @@ public class TopicAdapter extends ArrayAdapter<Topic> {
 
         //flagView.setImageResource(state.getFlagResource());
         Lesson lesson = Lesson.findLesson(String.valueOf(topic.id),lessons);
-        if (lesson!=null)
-        {
+
             nameView.setTypeface(nameView.getTypeface(), Typeface.BOLD);
 
-            if (topics.get(position).commercial.equals("0"))
-                nameView.setText(topic.name);
+            if (topics.get(position).commercial.equals("0") )
+                nameView.setText("\uD83D\uDCDA "+topic.name);
 
-            if (topics.get(position).commercial.equals("1"))
-                nameView.setText("\uD83D\uDD12 "+topic.name);
 
-            SpannableString spannable = DrawCircle.Draw(context,lesson);
-            circleView.setText(spannable);
-        }
 
-        else
-        {
-            nameView.setTypeface(nameView.getTypeface(), Typeface.BOLD);
+            if (topics.get(position).commercial.equals("1") && access.equals("0"))
+                nameView.setText("\uD83D\uDCB3 "+topic.name);
 
-            if (topics.get(position).commercial.equals("0"))
-                nameView.setText(topic.name);
+            if (topics.get(position).commercial.equals("1") && access.equals("1"))
+                nameView.setText("\uD83D\uDCDA "+topic.name );
 
-            if (topics.get(position).commercial.equals("1"))
-                nameView.setText("\uD83D\uDD12 "+topic.name);
+            if (lesson!=null)
+            {
+                SpannableString spannable = DrawCircle.Draw(context,lesson);
+                circleView.setText(spannable);
 
-            circleView.setVisibility(View.GONE);
-        }
+            } else {
+
+
+
+                circleView.setVisibility(View.GONE);
+            }
 
 
 

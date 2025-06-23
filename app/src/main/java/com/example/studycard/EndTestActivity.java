@@ -46,6 +46,7 @@ public class EndTestActivity extends AppCompatActivity {
     public static String user_id;
     public  Button RegButt;
     public  Button CommButt;
+    public String cours_id;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +98,8 @@ public class EndTestActivity extends AppCompatActivity {
 
             message = "Зарегистрируйтесь чтобы составить расписание повторений и отслеживать свой прогресс";
         }
-
+        Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
+        //главная картинка
         TextView resultView = findViewById(R.id.result);
         resultView.setText(message);
     }
@@ -108,6 +110,7 @@ public class EndTestActivity extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         String topic_id = arguments.getString("topic_id");
         String degree = arguments.getString("degree");
+        cours_id = arguments.getString("cours_id");
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("user_id",user_id);
@@ -138,7 +141,10 @@ public class EndTestActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(EndTestActivity.this, CommercialActivity.class);
+        intent.putExtra("user_id", user_id);
+        intent.putExtra("cours_id",cours_id);
         startActivity(intent);
+
     }
     public void getData(String messageOut)
     {

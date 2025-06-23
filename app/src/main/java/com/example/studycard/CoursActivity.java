@@ -49,6 +49,8 @@ public class CoursActivity extends AppCompatActivity {
     public static ArrayList<Chapter> chapters = new ArrayList<Chapter>();
     ListView chapterList;
     String cours_id;
+
+    String access ="0";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,8 @@ public class CoursActivity extends AppCompatActivity {
             cours_id = arguments.getString("id");
             String picture = arguments.getString("picture");
 
+
+
             TextView nameView = findViewById(R.id.name);
             ImageView imageView = findViewById(R.id.picture);
 
@@ -75,6 +79,16 @@ public class CoursActivity extends AppCompatActivity {
             getData(cours_id);
             jsonParse();
             listCreater();
+
+
+            User.getUserId(this);
+            if(!User.id.equals("0"))
+            {
+                User.getCommercial(cours_id,User.id);
+                access=User.mess;
+               // makeText(this, User.mess, Toast.LENGTH_SHORT).show();
+            }
+
 
 
 
@@ -188,7 +202,7 @@ public class CoursActivity extends AppCompatActivity {
         // получаем элемент ListView
         chapterList = findViewById(R.id.cousersList);
         // создаем адаптер
-        ChapterAdapter chapterAdapter = new ChapterAdapter(this, R.layout.chapter, chapters, lessons);
+        ChapterAdapter chapterAdapter = new ChapterAdapter(this, R.layout.chapter, chapters, lessons, access);
         // устанавливаем адаптер
         chapterList.setAdapter(chapterAdapter);
         // слушатель выбора в списке

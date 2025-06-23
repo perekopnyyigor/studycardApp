@@ -77,18 +77,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:autofillHints="Пароль"
-            android:text="-Доступ ко всем темам курса"
+            android:text="Чтобы получить доступ ко всем темам курса"
             android:padding="5dp"
             android:textSize="16sp" />
-        <TextView
-            android:id="@+id/text2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:autofillHints="Пароль"
-            android:text="-Отсутствие рекламы на курсе"
-            android:padding="5dp"
-            android:textSize="16sp" />
+
 
 
         <!-- Кнопка проверки -->

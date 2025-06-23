@@ -77,6 +77,7 @@ public class Test extends AppCompatActivity {
     public int count_variant_n=0;
     public int quantity_variant=0;
     public static String topic_id;
+    public static String cours_id;
     public static String message;
     ArrayList<Card> cards = new ArrayList<Card>();
     ProgressBar degreeBar;
@@ -112,6 +113,7 @@ public class Test extends AppCompatActivity {
             Bundle arguments = getIntent().getExtras();
             cards = (ArrayList<Card>) arguments.getSerializable("cards");
             topic_id = arguments.getString("topic_id");
+            cours_id = arguments.getString("cours_id");
 
             variantList = findViewById(R.id.recyclerView);
             //Счетчик
@@ -138,7 +140,8 @@ public class Test extends AppCompatActivity {
             String main_content = createContent(content,count_variant);
             printMarkdown(main_content);
 
-
+            makeText(this, "cours id"+cours_id, Toast.LENGTH_SHORT).show();
+            //главная картинка
 
             //Вписывание текста
             write = findViewById(R.id.write);
@@ -376,9 +379,10 @@ public class Test extends AppCompatActivity {
             count_variant_n=0;
             count=0;
 
-            Intent intent = new Intent(Test.this, InterstitialAdActivity.class);
+            Intent intent = new Intent(Test.this, EndTestActivity.class);
             intent.putExtra("topic_id", topic_id);
             intent.putExtra("degree", calculateDegree());
+            intent.putExtra("cours_id",cours_id);
             trueAnswer=0;
             wrongAnswer=0;
             startActivity(intent);
@@ -391,6 +395,8 @@ public class Test extends AppCompatActivity {
             Intent intent = new Intent(Test.this, Test.class);
             intent.putExtra("cards",cards);
             intent.putExtra("topic_id",topic_id);
+            intent.putExtra("cours_id",cours_id);
+
             startActivity(intent);
         }
     }
