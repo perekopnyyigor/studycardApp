@@ -41,7 +41,7 @@ public class CommercialActivity extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         cours_id = arguments.getString("cours_id");
         user_id = arguments.getString("user_id");
-        Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
         //главная картинка
         ImageView mainPicture = findViewById(R.id.picture);
         mainPicture.setImageResource(R.drawable.logo);

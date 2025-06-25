@@ -98,7 +98,7 @@ public class EndTestActivity extends AppCompatActivity {
 
             message = "Зарегистрируйтесь чтобы составить расписание повторений и отслеживать свой прогресс";
         }
-        Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, cours_id+" "+user_id, Toast.LENGTH_SHORT).show();
         //главная картинка
         TextView resultView = findViewById(R.id.result);
         resultView.setText(message);

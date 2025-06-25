@@ -50,7 +50,7 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
         this.context = context;
         this.access = access;
         this.lessons = lessons;
-        makeText(context, access, Toast.LENGTH_SHORT).show();
+        //makeText(context, access, Toast.LENGTH_SHORT).show();
 
     }
     public View getView(int position, View convertView, ViewGroup parent) {

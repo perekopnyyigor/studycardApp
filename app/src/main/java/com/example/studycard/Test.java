@@ -140,7 +140,7 @@ public class Test extends AppCompatActivity {
             String main_content = createContent(content,count_variant);
             printMarkdown(main_content);
 
-            makeText(this, "cours id"+cours_id, Toast.LENGTH_SHORT).show();
+            //makeText(this, "cours id"+cours_id, Toast.LENGTH_SHORT).show();
             //главная картинка
 
             //Вписывание текста
@@ -208,7 +208,7 @@ public class Test extends AppCompatActivity {
         jsonObject.put("card_id",card_id);
         jsonObject.put("content",content);
 
-        makeText(this, jsonObject.toString(), Toast.LENGTH_SHORT).show();
+        //makeText(this, jsonObject.toString(), Toast.LENGTH_SHORT).show();
         return jsonObject.toString();
     }
 

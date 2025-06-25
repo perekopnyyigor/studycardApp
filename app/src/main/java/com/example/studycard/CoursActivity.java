@@ -76,8 +76,11 @@ public class CoursActivity extends AppCompatActivity {
             nameView.setText(name);
 
             chapters.clear();
-            getData(cours_id);
-            jsonParse();
+
+
+            Cours.getChapters(cours_id);
+            chapters = Cours.jsonParseChapters(Cours.mess);
+
             listCreater();
 
 
@@ -90,109 +93,12 @@ public class CoursActivity extends AppCompatActivity {
             }
 
 
-
-
-
             return insets;
         });
     }
 
-    public void getData(String id)
-    {
-
-        makeText(getApplicationContext(), id,
-                Toast.LENGTH_SHORT).show();
-        message=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = new FormBody.Builder()
-                .add("cours_id", id)
-                .build();
 
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=open_cours")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    message=responseBody.string();
-
-                }
-            }
-        });
-        while (message ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-    public void jsonParse()
-    {
-        if(message!=null)
-        {
-            try {
-                JSONObject jsonObject = new JSONObject(message);
-                JSONArray jsonArray=jsonObject.getJSONArray("chapters");
-
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    Chapter chapter = new Chapter();
-                    chapter.name = jsonArray.getJSONObject(i).getString("name");
-                    ArrayList<Topic> topics = new ArrayList<Topic>();
-
-                    JSONArray jsontopics = jsonArray.getJSONObject(i).getJSONArray("topics");
-                    //String name_topic =jsontopics.getJSONObject(0).getString("name");
-
-                    for (int j=0; j<jsontopics.length();j++)
-                    {
-                        Topic topic = new Topic();
-                        topic.name =jsontopics.getJSONObject(j).getString("name");
-                        topic.id =jsontopics.getJSONObject(j).getInt("id");
-                        topic.cours_id =jsontopics.getJSONObject(j).getInt("cours");
-                        topic.commercial =jsontopics.getJSONObject(j).getString("commercial");
-                        topics.add(topic);
-                    }
-                    chapter.topics=topics;
-                    /*makeText(getApplicationContext(), chapter.topics.get(1).name ,
-                            Toast.LENGTH_SHORT).show();*/
-
-
-                    chapters.add(chapter);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
     public void listCreater()
     {
 
@@ -213,10 +119,6 @@ public class CoursActivity extends AppCompatActivity {
                 // получаем выбранный пункт
                 Chapter selectedChapter = (Chapter)parent.getItemAtPosition(position);
 
-
-
-                /*makeText(getApplicationContext(), "Был выбран пункт " + selectedChapter.name,
-                        Toast.LENGTH_SHORT).show();*/
 
             }
 

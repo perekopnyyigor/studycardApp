@@ -64,15 +64,15 @@ public class TopicAdapter extends ArrayAdapter<Topic> {
             nameView.setTypeface(nameView.getTypeface(), Typeface.BOLD);
 
             if (topics.get(position).commercial.equals("0") )
-                nameView.setText("\uD83D\uDCDA "+topic.name);
+                nameView.setText("✅ "+topic.name);
 
 
 
             if (topics.get(position).commercial.equals("1") && access.equals("0"))
-                nameView.setText("\uD83D\uDCB3 "+topic.name);
+                nameView.setText("\uD83D\uDD12 "+topic.name);
 
             if (topics.get(position).commercial.equals("1") && access.equals("1"))
-                nameView.setText("\uD83D\uDCDA "+topic.name );
+                nameView.setText("✅ "+topic.name );
 
             if (lesson!=null)
             {

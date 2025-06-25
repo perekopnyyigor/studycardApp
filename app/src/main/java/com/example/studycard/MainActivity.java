@@ -88,14 +88,7 @@ public class MainActivity extends AppCompatActivity {
             createMenu();
         }
 
-
-        Cours.getCourses();
-        courses=Cours.jsonParse(Cours.mess);
-
-        coursListCreater(courses);
-
-
-
+    Cours.getAllCourses(callback);
 
     }
     private void checkFirstLaunch() {
@@ -119,11 +112,26 @@ public class MainActivity extends AppCompatActivity {
             CRM.userEvent(String.valueOf(randomId), CRM.firstTime);
            // makeText(this, CRM.message, Toast.LENGTH_LONG).show();
         }
-    }
+    } // Проверка на первый вход
 
+    Cours.DataCallback callback = new Cours.DataCallback() {
+        @Override
+        public void onDataReceived(String data) {
+            runOnUiThread(() -> {
+                        courses=Cours.jsonParse(data);
+                        coursListCreater(courses);
+            }
+            );
+        }
+        @Override
+        public void onError(String errorMessage) {
+            runOnUiThread(() ->
+                    Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show()
+            );
+        }
+    };
 
-
-    public void createMenuAuto()
+    public void createMenuAuto()//Меню для авторизированного пользователя
     {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
@@ -163,14 +171,16 @@ public class MainActivity extends AppCompatActivity {
             switch (position)
             {
                 case 0:
-                    Cours.getCourses();
+                    /*Cours.getCourses();
                     courses=Cours.jsonParse(Cours.mess);
-                    coursListCreater(courses);
+                    coursListCreater(courses);*/
+                    Cours.getAllCourses(callback);
                     break;
                 case 1:
-                    Cours.getUserCourses(User.id);
-                    courses=Cours.jsonParse(Cours.mess);
-                    coursListCreater(courses);
+                    Cours.getUserCourses(User.id,callback);
+                    makeText(this, "Добавлены колбэки", Toast.LENGTH_SHORT).show();
+                    /*courses=Cours.jsonParse(Cours.mess);
+                    coursListCreater(courses);*/
                     break;
                 case 2:
                     Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
@@ -191,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-    public void createMenu()
+    public void createMenu()//Меню для неавторизированного пользователя
     {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
@@ -242,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void coursListCreater(ArrayList<Cours> courses)
+    public void coursListCreater(ArrayList<Cours> courses) //Меню курсов
     {
         RecyclerView coursesList = findViewById(R.id.recyclerCousers);
 
