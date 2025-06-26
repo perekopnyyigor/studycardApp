@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studycard.adapters.CoursAdapter;
 import com.example.studycard.adapters.CoursMenuAdapter;
 import com.example.studycard.adapters.MenuAdapter;
+import com.example.studycard.functional.Server;
 import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.PunktMenu;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         }
     } // Проверка на первый вход
 
-    Cours.DataCallback callback = new Cours.DataCallback() {
+    Server.DataCallback callback = new Server.DataCallback() {
         @Override
         public void onDataReceived(String data) {
             runOnUiThread(() -> {

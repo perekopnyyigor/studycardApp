@@ -1,25 +1,20 @@
 package com.example.studycard.objects;
 
-import android.widget.Toast;
 
-import com.example.studycard.MainActivity;
+import com.example.studycard.functional.Server;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 
-import okhttp3.Call;
-import okhttp3.Callback;
+
 import okhttp3.FormBody;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+
 import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+
 
 public class Cours {
     public static String mess;
@@ -33,76 +28,27 @@ public class Cours {
     {
 
     }
+
     public interface DataCallback {
         void onDataReceived(String data);  // Успешный ответ
         void onError(String errorMessage); // Ошибка
     }
 
-    public static void getAllCourses(DataCallback callback) {
-        OkHttpClient client = new OkHttpClient();
+    public static void getAllCourses(Server.DataCallback callback) {
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=all_chapters")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // Передаем ошибку в колбэк
-                callback.onError("Ошибка сети: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        callback.onError("Ошибка сервера: " + response.code());
-                        return;
-                    }
-                    String data = responseBody.string();
-                    callback.onDataReceived(data); // Передаем данные
-                }
-            }
-        });
+        Server.Request(callback,"https://studycard.ru/index_android.php?action=all_chapters");
     }
 
 
-    public static void getUserCourses(String id, DataCallback callback)
+    public static void getUserCourses(String id, Server.DataCallback callback)
     {
 
-
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("id", id)
                 .build();
 
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=user_courses")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // Передаем ошибку в колбэк
-                callback.onError("Ошибка сети: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        callback.onError("Ошибка сервера: " + response.code());
-                        return;
-                    }
-                    String data = responseBody.string();
-                    callback.onDataReceived(data); // Передаем данные
-                }
-            }
-        });
+        Server.Request(requestBody, callback,"https://studycard.ru/index_android.php?action=user_courses");
     }
 
     public static ArrayList<Cours> jsonParse(String message)
@@ -129,60 +75,15 @@ public class Cours {
         return courses;
     }
 
-    public static void getChapters(String id)
+    public static void getChapters(String id, Server.DataCallback callback)
     {
 
-        //makeText(getApplicationContext(), id,Toast.LENGTH_SHORT).show();
-        mess=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("cours_id", id)
                 .build();
 
+        Server.Request(requestBody, callback,"https://studycard.ru/index_android.php?action=open_cours");
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=open_cours")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    mess=responseBody.string();
-
-                }
-            }
-        });
-        while (mess ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 
     public static ArrayList<Chapter>  jsonParseChapters(String message)

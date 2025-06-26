@@ -1,5 +1,7 @@
 package com.example.studycard.objects;
 
+import com.example.studycard.functional.Server;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -28,60 +30,18 @@ public class Lesson {
     public String cours;
     public String cours_id;
 
-    public static void getUserLessons(String id)
+
+    public static void getUserLessons(String id, Server.DataCallback callback)
     {
 
-        message=null;
-//----------------------------------------------------
-
-        OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("id", id)
-
                 .build();
 
+        Server.Request(requestBody, callback,"https://studycard.ru/index_android.php?action=calendar");
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=calendar")
-                .post(requestBody)
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
-
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    message=responseBody.string();
-
-                }
-            }
-        });
-        while (message ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
     public static  ArrayList<Lesson>  findLessonForCours(ArrayList<Lesson> lessons, String cours_id)
     {
@@ -107,14 +67,14 @@ public class Lesson {
         }
         return null;
     }
-    public static ArrayList<Lesson> jsonParse()
+    public static ArrayList<Lesson> jsonParse(String data)
     {
         ArrayList<Lesson> lessons = new ArrayList<>();
 
-        if(Lesson.message!=null)
+        if(data!=null)
         {
             try {
-                JSONArray jsonArray = new JSONArray(Lesson.message);
+                JSONArray jsonArray = new JSONArray(data);
                 for(int i=0;i<jsonArray.length();i++)
                 {
                     Lesson lesson = new Lesson();

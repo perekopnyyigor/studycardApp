@@ -23,6 +23,7 @@ import com.example.studycard.adapters.CalendarAdapter;
 import com.example.studycard.adapters.ChapterAdapter;
 
 
+import com.example.studycard.functional.Server;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.CustomCalendar;
@@ -69,27 +70,37 @@ public class CalendarActivity extends AppCompatActivity {
 
         Picasso.get().load("https://studycard.ru/image/on-a-table-with-copy-space.webp").into(mainPicture);
 
-        //запускаем функции
-        // Получаем экземпляр SharedPreferences
-        /*SharedPreferences sharedPref = getSharedPreferences("user", Context.MODE_PRIVATE);
-        // Читаем данные
-        String username = sharedPref.getString("login", "defaultName");
-        id = sharedPref.getString("id", "0");
-        Lesson.getUserLessons(id);*/
-        lessons= User.lessons;
 
-        ArrayList<CustomCalendar> calendars = null;
-        try {
-            calendars = CustomCalendar.createCalendar(lessons);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        Lesson.getUserLessons(User.id, callbackLesson);
 
-        //Toast.makeText(this, calendars.get(0).calendarPunkts.get(0).name+" ", Toast.LENGTH_SHORT).show();
-        listCreater(calendars);
+
 
     }
+    Server.DataCallback callbackLesson = new Server.DataCallback() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void onDataReceived(String data) {
+            runOnUiThread(() -> {
+                        lessons = Lesson.jsonParse(data);
+                        ArrayList<CustomCalendar> calendars = null;
+                        try {
+                            calendars = CustomCalendar.createCalendar(lessons);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
 
+
+                        listCreater(calendars);
+                    }
+            );
+        }
+        @Override
+        public void onError(String errorMessage) {
+            runOnUiThread(() ->
+                    Toast.makeText(CalendarActivity.this, errorMessage, Toast.LENGTH_SHORT).show()
+            );
+        }
+    };
 
     public void listCreater(ArrayList<CustomCalendar> calendars)
     {

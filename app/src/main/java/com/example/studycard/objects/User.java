@@ -3,6 +3,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences;
 
+import com.example.studycard.functional.Server;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -32,9 +34,20 @@ public class User {
         name = sharedPref.getString("login", "defaultName");
         id = sharedPref.getString("id", "0");
         noId = sharedPref.getString("noId", "0");
-        Lesson.getUserLessons(id);
-        lessons = Lesson.jsonParse();
+
     }
+
+    public static ArrayList<Lesson> getUserLessons(String id)
+    {
+/*
+        ArrayList<Lesson> lessons = new ArrayList<Lesson>();
+
+        Lesson.getUserLessons(id);
+        lessons = Lesson.jsonParse();*/
+
+        return lessons;
+    }
+
     public static void getUserId(Context context)
     {
 
@@ -44,9 +57,8 @@ public class User {
 
 
     }
-    public static void getCommercial(String cours, String user)
+    public static void getCommercial(String cours, String user, Server.DataCallback callback)
     {
-
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
@@ -55,46 +67,9 @@ public class User {
                 .build();
 
 
-        Request request = new Request.Builder()
-                .url("https://studycard.ru/index_android.php?action=getCommercial")
-                .post(requestBody)
-                .build();
+        Server.Request(requestBody, callback, "https://studycard.ru/index_android.php?action=getCommercial");
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Запрос к серверу не был успешен: " +
-                                response.code() + " " + response.message());
 
-                    }
-
-                    // пример получения всех заголовков ответа
-                    Headers responseHeaders = response.headers();
-                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                        // вывод заголовков
-                        System.out.println(responseHeaders.name(i) + ": "
-                                + responseHeaders.value(i));
-                    }
-                    // вывод тела ответа
-                    mess=responseBody.string();
-
-                }
-            }
-        });
-        while (mess ==null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 }

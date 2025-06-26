@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.studycard.adapters.ChapterAdapter;
 import com.example.studycard.adapters.CoursAdapter;
+import com.example.studycard.functional.Server;
 import com.example.studycard.objects.CRM;
 import com.example.studycard.objects.Chapter;
 import com.example.studycard.objects.Cours;
@@ -49,7 +50,7 @@ public class CoursActivity extends AppCompatActivity {
     public static ArrayList<Chapter> chapters = new ArrayList<Chapter>();
     ListView chapterList;
     String cours_id;
-
+    ArrayList<Lesson>  allLessons = new ArrayList<Lesson>();
     String access ="0";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,18 +79,17 @@ public class CoursActivity extends AppCompatActivity {
             chapters.clear();
 
 
-            Cours.getChapters(cours_id);
-            chapters = Cours.jsonParseChapters(Cours.mess);
 
-            listCreater();
 
+            Cours.getChapters(cours_id, callback);
+
+            Lesson.getUserLessons(User.id, callbackLesson);
 
             User.getUserId(this);
             if(!User.id.equals("0"))
             {
-                User.getCommercial(cours_id,User.id);
-                access=User.mess;
-               // makeText(this, User.mess, Toast.LENGTH_SHORT).show();
+                User.getCommercial(cours_id,User.id,callbackCommercial);
+
             }
 
 
@@ -97,14 +97,63 @@ public class CoursActivity extends AppCompatActivity {
         });
     }
 
+    Server.DataCallback callback = new Server.DataCallback() {
+        @Override
+        public void onDataReceived(String data) {
+            runOnUiThread(() -> {
+                        chapters = Cours.jsonParseChapters(data);
+                        listCreater();
+                    }
+            );
+        }
+        @Override
+        public void onError(String errorMessage) {
+            runOnUiThread(() ->
+                    Toast.makeText(CoursActivity.this, errorMessage, Toast.LENGTH_SHORT).show()
+            );
+        }
+    };
 
+    Server.DataCallback callbackLesson = new Server.DataCallback() {
+        @Override
+        public void onDataReceived(String data) {
+            runOnUiThread(() -> {
+                        allLessons = Lesson.jsonParse(data);
+                        listCreater();
+                    }
+            );
+        }
+        @Override
+        public void onError(String errorMessage) {
+            runOnUiThread(() ->
+                    Toast.makeText(CoursActivity.this, errorMessage, Toast.LENGTH_SHORT).show()
+            );
+        }
+    };
+
+    Server.DataCallback callbackCommercial = new Server.DataCallback() {
+        @Override
+        public void onDataReceived(String data) {
+            runOnUiThread(() -> {
+                        access=data;
+                        listCreater();
+                    }
+            );
+        }
+        @Override
+        public void onError(String errorMessage) {
+            runOnUiThread(() ->
+                    Toast.makeText(CoursActivity.this, errorMessage, Toast.LENGTH_SHORT).show()
+            );
+        }
+    };
 
     public void listCreater()
     {
+        //ArrayList<Lesson>  allLessons = User.getUserLessons(User.id);
 
-        ArrayList<Lesson>  lessons = Lesson.findLessonForCours(User.lessons, cours_id);
-        //lessons =User.lessons;
-        //makeText(this, User.lessons.get(0).cours_id+"/"+cours_id, Toast.LENGTH_SHORT).show();
+        ArrayList<Lesson>  lessons = Lesson.findLessonForCours(allLessons, cours_id);
+
         // получаем элемент ListView
         chapterList = findViewById(R.id.cousersList);
         // создаем адаптер
