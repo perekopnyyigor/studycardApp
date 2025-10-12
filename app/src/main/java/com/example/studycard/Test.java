@@ -11,7 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
@@ -40,6 +40,10 @@ import com.example.studycard.Prism4j.MyGrammarLocator;
 import com.example.studycard.adapters.VariantAdapter;
 import com.example.studycard.objects.Card;
 import com.example.studycard.objects.Variant;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -671,7 +675,7 @@ public class Test extends AppCompatActivity {
                         if(arr[i].contains("{f}"))
                             result2 += "\\text{\\textbf{???}}";
                         else
-                            result2 += "**???**";
+                            result2 += "???";
                     }
 
                     else
@@ -903,7 +907,13 @@ public class Test extends AppCompatActivity {
             // Устанавливаем LayoutManager для отображения сеткой
             int numberOfColumns = 2; // Количество столбцов
             GridLayoutManager gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
-            variantList.setLayoutManager(gridLayoutManager);
+
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+            layoutManager.setFlexDirection(FlexDirection.ROW);
+            layoutManager.setFlexWrap(FlexWrap.WRAP);
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+
+            variantList.setLayoutManager(layoutManager);
 
             // Устанавливаем адаптер
             variantList.setAdapter(variantAdapter);
@@ -921,28 +931,11 @@ public class Test extends AppCompatActivity {
                    if(consent)
                    {
                        changeVariant(rightVariant.content, selectedVariant.content);
-                       /*int indexSelect=0;
-                       int indexRight=0;
-                       for (int i = 0; i<mainVariants.length; i++)
-                       {
-                           String[] content = mainVariants[i].split("\\{t\\}");
 
-                           content[0]=content[0].replace("{f}", "");
-                           content[0]=replaceVariant(content[0]);
-                           if(Objects.equals(content[0],rightVariant.content))
-                               indexRight=i;
-                           if(Objects.equals(content[0],selectedVariant.content))
-                               indexSelect=i;
-
-                       }
-                       String temp=mainVariants[indexRight];
-                       mainVariants[indexRight]=mainVariants[indexSelect];
-                       mainVariants[indexSelect]=temp;*/
                    }
                     count_variant++;
                     trueAnswer++;
                     calculateDegree();
-
 
 
                     if((quantity_variant-count_variant_n)==(count_variant))
@@ -951,11 +944,8 @@ public class Test extends AppCompatActivity {
                             String main_content = createContent(content,count_variant);
                         updateContentWithBuffer1(main_content);
 
-
                             nextButton.setVisibility(View.VISIBLE);
                             variantList.setVisibility(View.GONE);
-
-
 
 
                     }

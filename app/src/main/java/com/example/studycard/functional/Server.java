@@ -19,9 +19,6 @@ public class Server {
     {
 
 
-
-
-
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(url)
                 .post(requestBody)

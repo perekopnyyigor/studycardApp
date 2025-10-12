@@ -5,7 +5,7 @@ import static io.noties.prism4j.Prism4j.grammar;
 import static io.noties.prism4j.Prism4j.pattern;
 import static io.noties.prism4j.Prism4j.token;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import io.noties.prism4j.Prism4j;
 import io.noties.prism4j.annotations.Aliases;

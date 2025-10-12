@@ -82,7 +82,7 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
                 .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDefault.create())) // Подсветка синтаксиса
                 .usePlugin(JLatexMathPlugin.create(content.getTextSize(), new JLatexMathPlugin.BuilderConfigure() {
                     @Override
-                    public void configureBuilder(@android.support.annotation.NonNull JLatexMathPlugin.Builder builder) {
+                    public void configureBuilder(@androidx.annotation.NonNull JLatexMathPlugin.Builder builder) {
                         // ENABLE inlines
                         builder.inlinesEnabled(true);
                     }

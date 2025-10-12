@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.studycard"
         minSdk = 24
         targetSdk = 34
-        versionCode = 6
-        versionName = "2.0.4"
+        versionCode = 11
+        versionName = "2.0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,15 +28,30 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         viewBinding = true
         compose = true
     }
-    kotlinOptions {
-        jvmTarget = "11"
+
+    // ЗАМЕНА: Устаревший kotlinOptions на новый синтаксис
+    kotlin {
+        jvmToolchain(21)
+    }
+
+    packaging {
+        resources {
+            excludes += "META-INF/annotations-java5/**"
+            excludes += "**/annotations-java5/**"
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains:annotations:24.1.0")
     }
 }
 
@@ -61,7 +76,7 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
 
-    // Тестирование//
+    // Тестирование
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -74,11 +89,10 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
-    // Markwon для работы с Markdown
+    // Markwon для работы с Markdown - с исключениями
     implementation("io.noties.markwon:core:4.6.2") {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
-
     implementation("io.noties.markwon:html:4.6.2") {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
@@ -98,8 +112,8 @@ dependencies {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
 
-    implementation ("com.google.firebase:firebase-messaging:24.1.1")
-    implementation ("com.google.firebase:firebase-analytics:22.4.0")
+    implementation("com.google.firebase:firebase-messaging:24.1.1")
+    implementation("com.google.firebase:firebase-analytics:22.4.0")
 
     implementation("com.yandex.android:mobileads:7.12.2")
 
@@ -112,26 +126,17 @@ dependencies {
     implementation("io.noties.markwon:recycler-table:4.6.2") {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
-    
-    implementation("io.noties.markwon:ext-latex:4.6.2") {
-        exclude(group = "org.jetbrains", module = "annotations-java5")
-    }
 
     implementation("io.noties.markwon:ext-tables:4.6.2") {
         exclude(group = "org.jetbrains", module = "annotations-java5")
     }
 
-
-    implementation("org.jetbrains:annotations:24.0.0") {
-        exclude(group = "org.jetbrains", module = "annotations-java5")
-    }
-
     implementation("com.google.android.gms:play-services-auth:20.7.0")
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest);
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 
-    // Стандартная тема для Prism4j, если она будет использоваться
-    // implementation("io.noties:prism4j-theme-default:2.0.0") {
-    //    exclude(group = "org.jetbrains", module = "annotations-java5")
-    // }
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+
+    // Принудительно используем одну версию annotations
+    implementation("org.jetbrains:annotations:24.1.0")
 }
