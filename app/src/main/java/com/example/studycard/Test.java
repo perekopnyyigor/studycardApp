@@ -872,7 +872,16 @@ public class Test extends AppCompatActivity {
         mainVariants[indexSelect]=temp;
     }
 
-
+    public int charsQuantity(ArrayList<Variant> variants)
+    {
+        int max =0;
+        for (int i =0;i<variants.size();i++)
+        {
+            if (variants.get(i).content.length()>max)
+                max = variants.get(i).content.length();
+        }
+        return max;
+    }
 
     public void listCreater(ArrayList<Variant> variants) {
         // Получаем RecyclerView
@@ -906,14 +915,21 @@ public class Test extends AppCompatActivity {
 
             // Устанавливаем LayoutManager для отображения сеткой
             int numberOfColumns = 2; // Количество столбцов
+
+            int max_lenght = charsQuantity(variantsForList);
+
+            if (max_lenght<2)
+                numberOfColumns = 4;
+            else if (max_lenght<6)
+                numberOfColumns = 3;
+            else
+                numberOfColumns=2;
+
             GridLayoutManager gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
 
-            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-            layoutManager.setFlexDirection(FlexDirection.ROW);
-            layoutManager.setFlexWrap(FlexWrap.WRAP);
-            layoutManager.setJustifyContent(JustifyContent.FLEX_START);
 
-            variantList.setLayoutManager(layoutManager);
+
+            variantList.setLayoutManager(gridLayoutManager);
 
             // Устанавливаем адаптер
             variantList.setAdapter(variantAdapter);
