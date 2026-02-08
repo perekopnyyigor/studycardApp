@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -99,6 +100,7 @@ public class Test extends AppCompatActivity {
     Button addReview;
     Button openReview;
     TextView nameView;
+    private Markwon markwon;
     int start_pos=0;
     int end_pos=0;
     int degreeOld;
@@ -120,7 +122,7 @@ public class Test extends AppCompatActivity {
             cards = (ArrayList<Card>) arguments.getSerializable("cards");
             topic_id = arguments.getString("topic_id");
             cours_id = arguments.getString("cours_id");
-
+            initMarkwon();
             variantList = findViewById(R.id.recyclerView);
             //Счетчик
             TextView countView = findViewById(R.id.count);
@@ -145,7 +147,7 @@ public class Test extends AppCompatActivity {
             contentView = findViewById(R.id.content);
             String main_content = createContent(content,count_variant);
             markdown = new Markdown(contentView, Test.this);
-            markdown.print(main_content);
+            markdown.printStatic(main_content);
 
             //makeText(this, "cours id"+cours_id, Toast.LENGTH_SHORT).show();
             //главная картинка
@@ -186,6 +188,14 @@ public class Test extends AppCompatActivity {
             return insets;
         });
     }
+    private void initMarkwon() {
+        int tableHead = ContextCompat.getColor(this, R.color.TableHead);
+        int tableOdd = ContextCompat.getColor(this, R.color.TableOdd);
+        final Prism4j prism4j = new Prism4j(new MyGrammarLocator());
+
+
+    }
+
     public void openReview(View v)
     {
         variantList.setVisibility(View.GONE);
@@ -466,6 +476,7 @@ public class Test extends AppCompatActivity {
                 //Содержание
                 String main_content = createContent(content, count_variant);
                 markdown.print(main_content);
+
             }
 
 
@@ -482,80 +493,7 @@ public class Test extends AppCompatActivity {
 
 
 
-    public void printMarkdown(String main_content)
-    {
-        int TableHead = ContextCompat.getColor(this, R.color.TableHead);
-        int TableOdd = ContextCompat.getColor(this, R.color.TableOdd);
-        main_content = replace(main_content);
-        final Prism4j prism4j = new Prism4j(new MyGrammarLocator());
-        final Markwon markwon = Markwon.builder(Test.this)
-
-                .usePlugin(GlideImagesPlugin.create(new GlideImagesPlugin.GlideStore() {
-                    @NonNull
-                    @Override
-                    public RequestBuilder<Drawable> load(@NonNull AsyncDrawable drawable) {
-                        DisplayMetrics displayMetrics = Test.this.getResources().getDisplayMetrics();
-                        int screenWidth = displayMetrics.widthPixels;
-                        int targetWidth = screenWidth ; // Устанавливаем половину ширины экрана
-                        int targetHeight = targetWidth; // Пропорциональная высота (например, квадрат)
-
-                        // Загрузка изображения через Glide с настройкой размера
-                        return Glide.with(Test.this)
-                                .load(drawable.getDestination())
-                                .override(targetWidth, targetHeight) // Указываем размеры изображения
-                                .fitCenter(); // Настройка масштабирования (или .centerCrop() для обрезки)
-                    }
-
-                    @Override
-                    public void cancel(@NonNull Target<?> target) {
-                        Glide.with(Test.this).clear(target);
-                    }
-                }))
-                .usePlugin(MarkwonInlineParserPlugin.create()) // Inline парсер
-                .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDefault.create())) // Подсветка синтаксиса
-                .usePlugin(TablePlugin.create(builder ->
-                        builder
-                                .tableBorderColor(Color.RED)
-                                .tableBorderWidth(0)
-                                .tableCellPadding(0)
-
-                                .tableHeaderRowBackgroundColor(TableHead)
-                                .tableEvenRowBackgroundColor(Color.WHITE)
-                                .tableOddRowBackgroundColor(TableOdd)
-                                .build()
-                ))
-                .usePlugin(JLatexMathPlugin.create(contentView.getTextSize(), new JLatexMathPlugin.BuilderConfigure() {
-                    @Override
-                    public void configureBuilder(@NonNull JLatexMathPlugin.Builder builder) {
-                        // ENABLE inlines
-                        builder.inlinesEnabled(true);
-                    }
-                }))
-                .build();
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //markwon.setMarkdown(contentView, replace(main_content));
-
-        // Рендеринг в буфер
-        markwon.setMarkdown(contentView, replace(main_content));
-
-        // Получаем Spannable из буфера
-        CharSequence renderedText = contentView.getText();
-
-
-
-        contentView.post(() -> {
-            contentView.setText(renderedText);
-            contentView.invalidate();
-            contentView.requestLayout();
-        });
-
-    }
+   /* */
 //создать варианты
     public ArrayList<Variant> createVariant(String content,int start)
     {
@@ -873,6 +811,7 @@ public class Test extends AppCompatActivity {
                         variantList.setVisibility(View.GONE);
                         contentView.setVisibility(View.GONE);
                         String main_content = createContent(content,count_variant);
+
                         markdown.print(main_content);
                         //варианты
                         listCreater(createVariant(content,count_variant));

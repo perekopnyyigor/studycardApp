@@ -105,7 +105,7 @@ public class CardMenuAdapter extends RecyclerView.Adapter<CardMenuAdapter.ViewHo
         TextView content=holder.contentView;
 
         Markdown markdown =new Markdown(content,context);
-        markdown.print(cardContent);
+        markdown.printStatic(cardContent);
 
 
     }

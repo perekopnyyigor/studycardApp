@@ -172,16 +172,13 @@ public class MainActivity extends AppCompatActivity {
             switch (position)
             {
                 case 0:
-                    /*Cours.getCourses();
-                    courses=Cours.jsonParse(Cours.mess);
-                    coursListCreater(courses);*/
+
                     Cours.getAllCourses(callback);
                     break;
                 case 1:
                     Cours.getUserCourses(User.id,callback);
-                    makeText(this, "Добавлены колбэки", Toast.LENGTH_SHORT).show();
-                    /*courses=Cours.jsonParse(Cours.mess);
-                    coursListCreater(courses);*/
+
+
                     break;
                 case 2:
                     Intent intent = new Intent(MainActivity.this, CalendarActivity.class);

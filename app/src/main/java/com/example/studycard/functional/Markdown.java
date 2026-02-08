@@ -35,37 +35,17 @@ public class Markdown {
 
     public  TextView contentView;
     public  Context context;
+    public Markwon markwon;
 
     public Markdown(TextView contentView, Context context)
     {
         this.contentView = contentView;
         this.context = context;
+        this.markwon = markIni();
     }
-    public  void print(String newContent) {
-        newContent = replace(newContent);
-
-        // Проверяем входное содержимое
-        if (newContent == null || newContent.isEmpty()) {
-            Log.e("MarkdownError", "Пустое содержимое");
-            return;
-        }
-
-        // Настраиваем буфер
-        TextView buffer = new TextView(context);
-        buffer.setTextSize(contentView.getTextSize());
-        buffer.setMovementMethod(LinkMovementMethod.getInstance());
-        buffer.setTextIsSelectable(true);
-
-        int TableHead;
-        int TableOdd;
-
-
-        TableHead = ContextCompat.getColor(context, R.color.TableHead);
-        TableOdd = ContextCompat.getColor(context, R.color.TableOdd);
-
-
-        // Настройка Markwon
-        final Markwon markwon = Markwon.builder(context)
+    public Markwon markIni()
+    {
+         Markwon markwon = Markwon.builder(context)
                 .usePlugin(GlideImagesPlugin.create(new GlideImagesPlugin.GlideStore() {
                     @NonNull
                     @Override
@@ -100,6 +80,27 @@ public class Markdown {
                     }
                 }))
                 .build();
+         return markwon;
+    }
+    public  void print(String newContent) {
+        newContent = replace(newContent);
+
+        // Проверяем входное содержимое
+        if (newContent == null || newContent.isEmpty()) {
+            Log.e("MarkdownError", "Пустое содержимое");
+            return;
+        }
+
+        // Настраиваем буфер
+        TextView buffer = new TextView(context);
+        buffer.setTextSize(contentView.getTextSize());
+        buffer.setMovementMethod(LinkMovementMethod.getInstance());
+        buffer.setTextIsSelectable(true);
+
+
+
+
+
 
         // Рендеринг Markdown
         try {
@@ -116,6 +117,37 @@ public class Markdown {
             contentView.invalidate();
             contentView.requestLayout();
         });
+    }
+
+
+    public void printStatic(String main_content)
+    {
+
+        main_content = replace(main_content);
+
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //markwon.setMarkdown(contentView, replace(main_content));
+
+        // Рендеринг в буфер
+        markwon.setMarkdown(contentView, replace(main_content));
+
+        // Получаем Spannable из буфера
+        CharSequence renderedText = contentView.getText();
+
+
+
+        contentView.post(() -> {
+            contentView.setText(renderedText);
+            contentView.invalidate();
+            contentView.requestLayout();
+        });
+
     }
     public  String replace(String oldString)
     {
@@ -138,5 +170,4 @@ public class Markdown {
         }
         return newString.toString();
     }
-
 }
