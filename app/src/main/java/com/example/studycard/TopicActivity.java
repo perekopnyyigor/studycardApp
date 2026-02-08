@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studycard.adapters.CalendarAdapter;
-import com.example.studycard.adapters.CardAdapter;
+//import com.example.studycard.adapters.CardAdapter;
 import com.example.studycard.adapters.CardMenuAdapter;
 import com.example.studycard.adapters.ChapterAdapter;
 import com.example.studycard.adapters.CoursMenuAdapter;

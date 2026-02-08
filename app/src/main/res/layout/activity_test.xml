@@ -68,16 +68,21 @@
                 android:orientation="vertical"
                 android:layout_margin="16dp">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/openReview"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="openReview"
                     android:layout_marginTop="10dp"
+                    android:onClick="openReview"
                     android:text="Замечание"
-                    android:backgroundTint="@color/blue"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+
+                    android:textColor="@color/blue"
+                    app:backgroundTint="@color/white"
+                    app:strokeColor="@color/blue"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="8dp" />
 
                 <TextView
                     android:id="@+id/name"
@@ -123,16 +128,22 @@
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/next"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:onClick="next"
                     android:text="Далее"
-                    android:backgroundTint="@color/blue_dark"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+
+                    android:textColor="@color/blue_dark"
+                    app:backgroundTint="@color/white"
+                    app:strokeColor="@color/blue_dark"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="4dp" />
+
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

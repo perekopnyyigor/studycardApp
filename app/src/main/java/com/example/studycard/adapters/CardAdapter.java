@@ -22,6 +22,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.Target;
 import com.example.studycard.Prism4j.MyGrammarLocator;
 import com.example.studycard.R;
+import com.example.studycard.functional.Markdown;
 import com.example.studycard.objects.Card;
 
 import java.util.Collections;
@@ -102,10 +103,12 @@ public class CardAdapter extends ArrayAdapter<Card> {
         TextView content = view.findViewById(R.id.content);
 
         Card card = cards.get(position);
+        Markdown markdown =new Markdown(content,context);
 
-        nameView.setText(card.name);
+        nameView.setText(card.name +"!!");
+        markdown.print(card.content+"!!");
 
-        int TableHead = ContextCompat.getColor(context, R.color.TableHead);
+        /*int TableHead = ContextCompat.getColor(context, R.color.TableHead);
         int TableOdd = ContextCompat.getColor(context, R.color.TableOdd);
 
         final Markwon markwon = Markwon.builder(context)
@@ -155,7 +158,7 @@ public class CardAdapter extends ArrayAdapter<Card> {
 
 
 
-        markwon.setMarkdown(content, replace(card.content));
+        markwon.setMarkdown(content, replace(card.content));*/
         //markwon.setMarkdown(content, markdownText);
 
 

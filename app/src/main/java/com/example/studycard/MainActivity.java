@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.login);
         if (!User.id.equals("0"))
         {
-            textView.setText("Добро пожаловать "+ User.name+ "! ");
+            textView.setText("Добро пожаловать "+ User.name+ "!!!");
             createMenuAuto();
         }
         else

@@ -38,6 +38,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.Target;
 import com.example.studycard.Prism4j.MyGrammarLocator;
 import com.example.studycard.adapters.VariantAdapter;
+import com.example.studycard.functional.Markdown;
 import com.example.studycard.objects.Card;
 import com.example.studycard.objects.Variant;
 import com.google.android.flexbox.FlexDirection;
@@ -103,6 +104,7 @@ public class Test extends AppCompatActivity {
     int degreeOld;
     int degree = 100;
     String last_answer;
+    Markdown markdown;
     private VariantAdapter variantAdapter;
     //final Markwon markwon=null;
     @Override
@@ -142,7 +144,8 @@ public class Test extends AppCompatActivity {
             mainVariants = content.split("\\{m\\}");
             contentView = findViewById(R.id.content);
             String main_content = createContent(content,count_variant);
-            printMarkdown(main_content);
+            markdown = new Markdown(contentView, Test.this);
+            markdown.print(main_content);
 
             //makeText(this, "cours id"+cours_id, Toast.LENGTH_SHORT).show();
             //главная картинка
@@ -444,7 +447,7 @@ public class Test extends AppCompatActivity {
             {
 
                 String main_content = createContent(content,count_variant);
-                updateContentWithBuffer1(main_content);
+                markdown.print(main_content);
 
 
                 nextButton.setVisibility(View.VISIBLE);
@@ -462,7 +465,7 @@ public class Test extends AppCompatActivity {
 
                 //Содержание
                 String main_content = createContent(content, count_variant);
-                updateContentWithBuffer1(main_content);
+                markdown.print(main_content);
             }
 
 
@@ -476,19 +479,7 @@ public class Test extends AppCompatActivity {
 
 
     }
-    public void updatePartialContent(String newContent, int start, int end) {
-        SpannableStringBuilder spannable = new SpannableStringBuilder(contentView.getText());
-        spannable.replace(start, end, newContent); // Здесь метод replace работает
-        contentView.setText(spannable);
 
-    }
-
-    public void updateContentWithAnimation(String newContent) {
-        contentView.animate().alpha(0).setDuration(100).withEndAction(() -> {
-            printMarkdown(newContent); // Обновляем содержимое
-            contentView.animate().alpha(1).setDuration(700).start();
-        }).start();
-    }
 
 
     public void printMarkdown(String main_content)
@@ -505,7 +496,7 @@ public class Test extends AppCompatActivity {
                     public RequestBuilder<Drawable> load(@NonNull AsyncDrawable drawable) {
                         DisplayMetrics displayMetrics = Test.this.getResources().getDisplayMetrics();
                         int screenWidth = displayMetrics.widthPixels;
-                        int targetWidth = screenWidth / 2; // Устанавливаем половину ширины экрана
+                        int targetWidth = screenWidth ; // Устанавливаем половину ширины экрана
                         int targetHeight = targetWidth; // Пропорциональная высота (например, квадрат)
 
                         // Загрузка изображения через Glide с настройкой размера
@@ -624,15 +615,7 @@ public class Test extends AppCompatActivity {
 
        return variants;
     }
-    public  int countCharInString(String text, char target) {
-        int count = 0;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == target) {
-                count++;
-            }
-        }
-        return count;
-    }
+
     public String createContent(String content, int start)
     {
         String[] arr = mainVariants;// content.split("\\{m\\}");
@@ -693,88 +676,8 @@ public class Test extends AppCompatActivity {
         return result1+result2;
     }
 
-    public void createPosition(String content, int start)
-    {
-        String[] arr = content.split("\\{m\\}");
-        String result1="";
-        String result2="";
-
-        for (int i=0;i<start*2-1;i++)
-        {
-
-            result1 += arr[i];
-
-        }
-        int move = countCharInString(result1,'$');
-        start_pos = result1.length()-move;
-        end_pos = start_pos+3;
-    }
-    public void updateContentWithBuffer(String newContent) {
-        newContent = replace(newContent);
-        // Буферный TextView для промежуточного рендеринга
-        TextView buffer = new TextView(this);
-        buffer.setTextSize(contentView.getTextSize());
-        int TableHead = ContextCompat.getColor(this, R.color.TableHead);
-        int TableOdd = ContextCompat.getColor(this, R.color.TableOdd);
-        // Настройка Markwon
-        final Markwon markwon = Markwon.builder(this)
-                .usePlugin(GlideImagesPlugin.create(new GlideImagesPlugin.GlideStore() {
-            @NonNull
-            @Override
-            public RequestBuilder<Drawable> load(@NonNull AsyncDrawable drawable) {
-                DisplayMetrics displayMetrics = Test.this.getResources().getDisplayMetrics();
-                int screenWidth = displayMetrics.widthPixels;
-                int targetWidth = screenWidth / 2; // Устанавливаем половину ширины экрана
-                int targetHeight = targetWidth; // Пропорциональная высота (например, квадрат)
-
-                // Загрузка изображения через Glide с настройкой размера
-                return Glide.with(Test.this)
-                        .load(drawable.getDestination())
-                        .override(targetWidth, targetHeight) // Указываем размеры изображения
-                        .fitCenter(); // Настройка масштабирования (или .centerCrop() для обрезки)
-            }
-
-            @Override
-            public void cancel(@NonNull Target<?> target) {
-                Glide.with(Test.this).clear(target);
-            }
-        }))
-                .usePlugin(MarkwonInlineParserPlugin.create()) // Inline Markdown
-
-                .usePlugin(TablePlugin.create(builder ->
-                        builder
-                                .tableBorderColor(Color.RED)
-                                .tableBorderWidth(0)
-                                .tableCellPadding(0)
-
-                                .tableHeaderRowBackgroundColor(TableHead)
-                                .tableEvenRowBackgroundColor(Color.WHITE)
-                                .tableOddRowBackgroundColor(TableOdd)
-                                .build()
-                ))
-                .usePlugin(SyntaxHighlightPlugin.create(
-                        new Prism4j(new MyGrammarLocator()),
-                        Prism4jThemeDefault.create())) // Подсветка синтаксиса
-                .usePlugin(JLatexMathPlugin.create(contentView.getTextSize(), builder -> {
-                    builder.inlinesEnabled(true); // Включаем встроенный LaTeX
-                }))
-                .build();
-
-        // Рендеринг в буфер
-        markwon.setMarkdown(buffer, newContent);
-
-        // Получаем Spannable из буфера
-        CharSequence renderedText = buffer.getText();
-
-        contentView.post(() -> {
-            contentView.setText(renderedText);
-            contentView.invalidate();
-            contentView.requestLayout();
-        });
-    }
-
     public void updateContentWithBuffer1(String newContent) {
-        newContent = replace(newContent);
+       newContent = replace(newContent);
 
         // Проверяем входное содержимое
         if (newContent == null || newContent.isEmpty()) {
@@ -804,7 +707,7 @@ public class Test extends AppCompatActivity {
                     public RequestBuilder<Drawable> load(@NonNull AsyncDrawable drawable) {
                         DisplayMetrics displayMetrics = Test.this.getResources().getDisplayMetrics();
                         int screenWidth = displayMetrics.widthPixels;
-                        int targetWidth = screenWidth / 2; // Устанавливаем половину ширины экрана
+                        int targetWidth = screenWidth  / 10 * 8 ; // Устанавливаем половину ширины экрана
                         int targetHeight = targetWidth; // Пропорциональная высота (например, квадрат)
 
                         // Загрузка изображения через Glide с настройкой размера
@@ -958,11 +861,11 @@ public class Test extends AppCompatActivity {
                     {
 
                             String main_content = createContent(content,count_variant);
-                        updateContentWithBuffer1(main_content);
+                        markdown.print(main_content);
 
                             nextButton.setVisibility(View.VISIBLE);
                             variantList.setVisibility(View.GONE);
-
+                            openReview.setVisibility(View.GONE);
 
                     }
                     else
@@ -970,7 +873,7 @@ public class Test extends AppCompatActivity {
                         variantList.setVisibility(View.GONE);
                         contentView.setVisibility(View.GONE);
                         String main_content = createContent(content,count_variant);
-                        updateContentWithBuffer1(main_content);
+                        markdown.print(main_content);
                         //варианты
                         listCreater(createVariant(content,count_variant));
                         contentView.setVisibility(View.VISIBLE);

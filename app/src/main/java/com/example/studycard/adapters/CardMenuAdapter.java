@@ -20,6 +20,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.Target;
 import com.example.studycard.Prism4j.MyGrammarLocator;
 import com.example.studycard.R;
+import com.example.studycard.functional.Markdown;
 import com.example.studycard.objects.Card;
 import com.example.studycard.objects.Cours;
 import com.example.studycard.objects.PunktMenu;
@@ -103,57 +104,8 @@ public class CardMenuAdapter extends RecyclerView.Adapter<CardMenuAdapter.ViewHo
         holder.nameView.setText(name);
         TextView content=holder.contentView;
 
-        int TableHead = ContextCompat.getColor(context, R.color.TableHead);
-        int TableOdd = ContextCompat.getColor(context, R.color.TableOdd);
-
-        final Markwon markwon = Markwon.builder(context)
-                //.usePlugin(GlideImagesPlugin.create(context)) // Плагин для загрузки изображений
-                .usePlugin(GlideImagesPlugin.create(new GlideImagesPlugin.GlideStore() {
-                    @NonNull
-                    @Override
-                    public RequestBuilder<Drawable> load(@NonNull AsyncDrawable drawable) {
-                        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-                        int screenWidth = displayMetrics.widthPixels;
-                        int targetWidth = screenWidth / 2; // Устанавливаем половину ширины экрана
-                        int targetHeight = targetWidth; // Пропорциональная высота (например, квадрат)
-
-                        // Загрузка изображения через Glide с настройкой размера
-                        return Glide.with(context)
-                                .load(drawable.getDestination())
-                                .override(targetWidth, targetHeight) // Указываем размеры изображения
-                                .fitCenter(); // Настройка масштабирования (или .centerCrop() для обрезки)
-                    }
-
-                    @Override
-                    public void cancel(@NonNull Target<?> target) {
-                        Glide.with(context).clear(target);
-                    }
-                }))
-                .usePlugin(MarkwonInlineParserPlugin.create()) // Inline парсер
-                .usePlugin(TablePlugin.create(builder ->
-                        builder
-                                .tableBorderColor(Color.RED)
-                                .tableBorderWidth(0)
-                                .tableCellPadding(0)
-
-                                .tableHeaderRowBackgroundColor(TableHead)
-                                .tableEvenRowBackgroundColor(Color.WHITE)
-                                .tableOddRowBackgroundColor(TableOdd)
-                                .build()
-                ))
-                .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDefault.create())) // Подсветка синтаксиса
-                .usePlugin(JLatexMathPlugin.create(content.getTextSize(), new JLatexMathPlugin.BuilderConfigure() {
-                    @Override
-                    public void configureBuilder(@NonNull JLatexMathPlugin.Builder builder) {
-                        builder.inlinesEnabled(true); // Включение встроенных формул
-                    }
-                }))
-                .build();
-
-
-
-
-        markwon.setMarkdown(content, replace(cardContent));
+        Markdown markdown =new Markdown(content,context);
+        markdown.print(cardContent);
 
 
     }
